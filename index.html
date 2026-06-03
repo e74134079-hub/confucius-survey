@@ -615,10 +615,11 @@ function render(raw){
   drawCatPie('studioPieCanvas','studioPieLegend',
     data.filter(d=>d.role==='學生'),'studio',
     ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],
-    ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776','#d34467']);
+    ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776','#d34467'],
+    ['A 王逸璇 老師組','B 曾雅欣 老師組','C 許家茵 老師組','D 周佳怡 老師組','E 林中一 老師組','F 蘇業森 老師組','G 趙尉翔 老師組']);
   drawCatPie('quadPieCanvas','quadPieLegend',data,'quadrant',
     ['感性×批判','理性×批判','感性×包容','理性×包容'],
-    ['#2563a8','#b04a1f','#237f5d','#7c3f8f']);
+    ['#3d3c3a','#6b6864','#9c9894','#c4c2be']);
   renderTable(data);
 
   const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/n).toFixed(2);
@@ -716,7 +717,7 @@ function drawScatter(data){
 
 // ── PIE CHART ─────────────────────────────────────────────────────
 // ── GENERIC CATEGORY PIE ────────────────────────────────────────
-function drawCatPie(canvasId, legendId, data, key, cats, clrs) {
+function drawCatPie(canvasId, legendId, data, key, cats, clrs, labels) {
   const canvas = document.getElementById(canvasId);
   if(!canvas) return;
   const legEl = document.getElementById(legendId);
@@ -762,13 +763,13 @@ function drawCatPie(canvasId, legendId, data, key, cats, clrs) {
 
   // legend — only show non-zero
   if(legEl) {
-    const shortLabel = c => c.length > 8 ? c.slice(0,8)+'…' : c;
     legEl.innerHTML = cats.map((c,i)=>{
       if(counts[i]===0) return '';
       const pct = Math.round(counts[i]/total*100);
+      const lbl = labels ? labels[i] : (c.length > 10 ? c.slice(0,10)+'…' : c);
       return `<div class="pie-leg-item">
         <div class="pie-leg-dot" style="background:${clrs[i]}"></div>
-        <span>${shortLabel(c)}</span>
+        <span>${lbl}</span>
         <span class="pie-leg-pct">${pct}%</span>
         <span class="pie-leg-cnt">(${counts[i]})</span>
       </div>`;
@@ -789,7 +790,7 @@ function drawRolePie(data){
 
   const labels=['學生','老師','其他'];
   const labelsFull=['學生 Student','老師 Teacher','其他 Other'];
-  const clrs=ROLE_CLR;
+  const clrs=['#4c4948','#9c9894','#d4d2ce'];
   const counts=[0,0,0];
   data.forEach(d=>{
     if(!d.role) return;
@@ -870,10 +871,11 @@ drawCatPie('agePieCanvas','agePieLegend',[],
   ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776']);
 drawCatPie('studioPieCanvas','studioPieLegend',[],'studio',
   ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],
-  ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776','#d34467']);
+  ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776','#d34467'],
+  ['A 王逸璇 老師組','B 曾雅欣 老師組','C 許家茵 老師組','D 周佳怡 老師組','E 林中一 老師組','F 蘇業森 老師組','G 趙尉翔 老師組']);
 drawCatPie('quadPieCanvas','quadPieLegend',[],'quadrant',
   ['感性×批判','理性×批判','感性×包容','理性×包容'],
-  ['#2563a8','#b04a1f','#237f5d','#7c3f8f']);
+  ['#3d3c3a','#6b6864','#9c9894','#c4c2be']);
 </script>
 </body>
 </html>
