@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Confucius Temple Survey — 成大建築117級</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=300;400;500&family=DM+Mono:wght=300;400&family=Inter:wght=300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#111110;--g80:#3d3c3a;--g60:#6b6864;--g40:#9c9894;
@@ -91,11 +91,6 @@ header a:hover{color:var(--ink);border-color:var(--g60);}
 .desc-extra.show{display:block;}
 
 /* ── QUADRANT ── */
-.quad-section{}
-.quad-label-row{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:8px;
-}
 .quad-outer{position:relative;display:block;}
 #quadCanvas{
   width:100%;aspect-ratio:1;cursor:crosshair;display:block;
@@ -133,7 +128,7 @@ select{
   font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--w);
   appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c9894' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 12px center;
-  padding-right:32px;
+  padding-right:32px;margin-bottom:10px;
 }
 select:focus{outline:none;border-color:var(--ink);}
 
@@ -183,7 +178,7 @@ select:focus{outline:none;border-color:var(--ink);}
 .f-btn[data-role="其他"].active{background:var(--c-other);border-color:var(--c-other);}
 
 /* ── DASH GRID ── */
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1200px;}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1200px;margin-bottom:24px;}
 @media(max-width:740px){.dash-grid{grid-template-columns:1fr;}}
 .card{background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:20px 22px;}
 .card.span2{grid-column:span 2;}
@@ -202,6 +197,11 @@ select:focus{outline:none;border-color:var(--ink);}
 .bar-track{flex:1;height:4px;background:var(--g05);border-radius:2px;overflow:hidden;}
 .bar-fill{height:100%;border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1);}
 .bar-val{font-family:var(--mono);font-size:10px;color:var(--g40);width:22px;text-align:right;}
+
+/* ── PIE CHART CANVAS ── */
+.pie-container{display:flex;align-items:center;justify-content:center;gap:24px;padding:10px 0;}
+#rolePieCanvas{display:block;}
+.pie-legend{display:flex;flex-direction:column;gap:8px;}
 
 /* ── TREND BOX ── */
 .trend-box{
@@ -222,6 +222,15 @@ select:focus{outline:none;border-color:var(--ink);}
   width:100%;aspect-ratio:1;display:block;
   border:1px solid var(--g10);border-radius:3px;background:var(--w);
 }
+
+/* ── DATATABLE ── */
+.table-card{max-width:1200px;background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:20px 22px;}
+.table-wrapper{overflow-x:auto;margin-top:12px;}
+table.resp-table{width:100%;border-collapse:collapse;font-size:12px;text-align:left;}
+table.resp-table th{padding:10px 12px;color:var(--g40);font-weight:500;border-bottom:1px solid var(--g20);font-size:10px;letter-spacing:.05em;text-transform:uppercase;}
+table.resp-table td{padding:10px 12px;color:var(--g80);border-bottom:1px solid var(--g05);white-space:nowrap;}
+table.resp-table tr:hover td{background:var(--g05);}
+table.resp-table .cell-quad{font-family:var(--mono);font-size:11px;}
 </style>
 </head>
 <body>
@@ -300,10 +309,11 @@ select:focus{outline:none;border-color:var(--ink);}
         </div>
       </div>
 
+      <!-- 連動選單：組別與姓名 -->
       <div class="field-block" id="studio-wrap" style="display:none;">
         <label class="field-label">設計課組別 <span>/ Studio Group (students only)</span></label>
-        <select id="studio">
-          <option value="">— 請選擇 / Please select —</option>
+        <select id="studio" onchange="onStudioChange()">
+          <option value="">— 請選擇組別 / Please select group —</option>
           <option value="A-王逸璇">A — 王逸璇 老師組</option>
           <option value="B-曾雅欣">B — 曾雅欣 老師組</option>
           <option value="C-許家茵">C — 許家茵 老師組</option>
@@ -311,6 +321,21 @@ select:focus{outline:none;border-color:var(--ink);}
           <option value="E-林中一">E — 林中一 老師組</option>
           <option value="F-蘇業森">F — 蘇業森 老師組</option>
           <option value="G-趙尉翔">G — 趙尉翔 老師組</option>
+        </select>
+
+        <div id="student-name-wrap" style="display:none; margin-top:12px;">
+          <label class="field-label">學生個人姓名 <span>/ Student Name</span></label>
+          <select id="student-name">
+            <option value="">— 請選擇姓名 / Please select name —</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 非學生的姓名輸入（可選，維持架構一致性） -->
+      <div class="field-block" id="non-student-name-wrap" style="display:none;">
+        <label class="field-label">姓名 <span>/ Name (Optional)</span></label>
+        <select id="non-student-name">
+           <option value="訪客/老師">訪客/老師 (Anonymous/Teacher)</option>
         </select>
       </div>
 
@@ -378,12 +403,17 @@ select:focus{outline:none;border-color:var(--ink);}
 
     <!-- Scatter — spans 2 rows -->
     <div class="card" style="grid-row:span 2;">
-      <div class="card-title">Spatial Distribution · 座標分布</div>
+      <div class="card-title">Spatial Distribution · 組別座標分布</div>
       <canvas id="dashCanvas" width="440" height="440"></canvas>
       <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:var(--c-student)"></div>學生 Student</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--c-teacher)"></div>老師 Teacher</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--c-other)"></div>其他 Other</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sa)"></div>A組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sb)"></div>B組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sc)"></div>C組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sd)"></div>D組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--se)"></div>E組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sf)"></div>F組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sg)"></div>G組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#8a8885"></div>老師/其他</div>
         <div class="leg-item"><div class="leg-sq" style="background:var(--c-centroid)"></div>重心 Centroid</div>
       </div>
       <div class="trend-box" id="trendBox">載入中 Loading...</div>
@@ -395,10 +425,13 @@ select:focus{outline:none;border-color:var(--ink);}
       <div id="bars-age"></div>
     </div>
 
-    <!-- Role -->
+    <!-- Role (Pie Chart) -->
     <div class="card">
-      <div class="card-title">Role Distribution · 身份</div>
-      <div id="bars-role"></div>
+      <div class="card-title">Role Distribution · 身份比例</div>
+      <div class="pie-container">
+        <canvas id="rolePieCanvas" width="130" height="130"></canvas>
+        <div class="pie-legend" id="pieLegend"></div>
+      </div>
     </div>
 
     <!-- Studio -->
@@ -413,15 +446,46 @@ select:focus{outline:none;border-color:var(--ink);}
       <div class="card-title">Quadrant Distribution · 象限</div>
       <div id="bars-quad"></div>
     </div>
-
   </div>
+
+  <!-- 2. 全新表格：所有人名字與所在象限 -->
+  <div class="table-card">
+    <div class="card-title">Respondent Directory · 回應名單數據表</div>
+    <div class="table-wrapper">
+      <table class="resp-table" id="respTable">
+        <thead>
+          <tr>
+            <th>姓名 Name</th>
+            <th>身份 Role</th>
+            <th>設計組別 Studio</th>
+            <th>座標 (X, Y)</th>
+            <th>所在象限 Quadrant</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="5" style="text-align:center; color:var(--g40);">載入中 Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const SB = "https://ywuamzusgtmydgvlsxpv.supabase.co";
 const SK = "sb_publishable_C4u8NgyKacE5SrByLCQWTA_rBTkdJYr";
 
-// studio colour map
+// ── 圖片中的完整分組名單數據數據 ──
+const STUDENT_LISTS = {
+  'A-王逸璇': ['張稚涵', '黃郁文', '林伊璇', '朱蕾潔', '曾秭畇', '簡鼎易', '黃靖雅', '張幼蓁', '溫仁暄'],
+  'B-曾雅欣': ['張盈甄', '陳執雨', '徐晴甄', '傅品淳', '黃郁芯', '詹絢庭', '利軒源', '劉凱君', '莊濰榛'],
+  'C-許家茵': ['高芙琪', '呂冠德', '蔡幸筑', '陳逸錩', '舒敬庭', '許家瑜', '黃劼', '陳瑞彤', '陳宜甄'],
+  'D-周佳怡': ['周鈺娟', '陳海祥', '周新媛', '林映彤', '毛琳', '謝昕妤', '謝旻璇', '丁宥芹', '朱芊樺'],
+  'E-林中一': ['黃世澤', '陳儀庭', '于毓彤', '張佩歆', '簡睿均', '李亦文', '李佳穎', '林虹廷', '王靖翔', '吳宣儀'],
+  'F-蘇業森': ['傅佩晴', '陳羿帆', '林語珩', '李國梁', '詹致寧', '周庭旭', '張秉凱', '黃筠嫺', '張詠晴'],
+  'G-趙尉翔': ['曾柏翔', '林倍辰', '張尤魁', '馮冠衡', '郭恩帆', '謝綵恩', '鄭祖恩', '陳霈盈', '陳盈穎']
+};
+
 const STUDIO_CLR = {
   'A-王逸璇':'#2563a8','B-曾雅欣':'#b04a1f','C-許家茵':'#4a7a5c',
   'D-周佳怡':'#7c3f8f','E-林中一':'#c8860a','F-蘇業森':'#1e7a8a','G-趙尉翔':'#8a4a1e'
@@ -440,45 +504,38 @@ const QS=420;
 
 function drawQ(dx,dy){
   qctx.clearRect(0,0,QS,QS);
-  // quadrant tints
   const tints=['#fff7ed30','#eff6ff30','#f0fdf430','#fdf4ff30'];
   [[0,0],[1,0],[0,1],[1,1]].forEach(([a,b],i)=>{
     qctx.fillStyle=tints[i];qctx.fillRect(a*QS/2,b*QS/2,QS/2,QS/2);
   });
-  // subtle dot grid
   qctx.fillStyle='#d4d2ce';
   for(let xi=0;xi<=10;xi++) for(let yi=0;yi<=10;yi++){
     const px=xi*QS/10, py=yi*QS/10;
     qctx.beginPath();qctx.arc(px,py,1,0,Math.PI*2);qctx.fill();
   }
-  // axes
   qctx.strokeStyle='#d4d2ce';qctx.lineWidth=1;
   qctx.beginPath();qctx.moveTo(QS/2,0);qctx.lineTo(QS/2,QS);qctx.stroke();
   qctx.beginPath();qctx.moveTo(0,QS/2);qctx.lineTo(QS,QS/2);qctx.stroke();
-  // axis endpoint labels
   qctx.fillStyle='#9c9894';qctx.font='10px Inter,sans-serif';
   qctx.textAlign='center';qctx.fillText('批判 Criticality',QS/2,14);
   qctx.fillText('包容 Inclusivity',QS/2,QS-5);
   qctx.textAlign='left';qctx.fillText('理性',4,QS/2+4);
   qctx.textAlign='right';qctx.fillText('感性',QS-4,QS/2+4);
-  // quadrant corner ghost labels
+  
   qctx.fillStyle='#e8e6e2';qctx.font='9px "DM Mono",monospace';
   qctx.textAlign='left';qctx.fillText('理×批',6,22);
   qctx.textAlign='right';qctx.fillText('感×批',QS-6,22);
   qctx.textAlign='left';qctx.fillText('理×包',6,QS-8);
   qctx.textAlign='right';qctx.fillText('感×包',QS-6,QS-8);
-  // dot
+
   if(dx!==null){
     const px=(dx+5)/10*QS, py=(1-(dy+5)/10)*QS;
-    // crosshair
     qctx.strokeStyle='#11111015';qctx.lineWidth=.8;qctx.setLineDash([3,4]);
     qctx.beginPath();qctx.moveTo(px,0);qctx.lineTo(px,QS);qctx.stroke();
     qctx.beginPath();qctx.moveTo(0,py);qctx.lineTo(QS,py);qctx.stroke();
     qctx.setLineDash([]);
-    // outer ring
     qctx.strokeStyle='#11111020';qctx.lineWidth=8;
     qctx.beginPath();qctx.arc(px,py,14,0,Math.PI*2);qctx.stroke();
-    // dot
     qctx.fillStyle='#111110';
     qctx.beginPath();qctx.arc(px,py,7,0,Math.PI*2);qctx.fill();
     qctx.fillStyle='#ffffff';
@@ -500,21 +557,39 @@ qc.addEventListener('click',e=>{
     `<span class="quad-name">${qname}</span>`;
 });
 
-// ── RADIO ──────────────────────────────────────────────────────────
+// ── RADIO & DROPDOWNS ────────────────────────────────────────────────
 function pick(el,grp){
   document.querySelectorAll(`#grp-${grp} .pill`).forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
   if(grp==='age') selAge=el.textContent;
   if(grp==='role') selRole=el.textContent;
 }
+
 function onRole(el){
-  document.getElementById('studio-wrap').style.display=
-    el.textContent.includes('學生')?'block':'none';
+  const isStudent = el.textContent.includes('學生');
+  document.getElementById('studio-wrap').style.display = isStudent ? 'block' : 'none';
+  document.getElementById('non-student-name-wrap').style.display = !isStudent ? 'block' : 'none';
 }
-function toggleDesc(el){
-  const extra=el.nextElementSibling;
-  const open=extra.classList.toggle('show');
-  el.textContent=open?'－ 收起 / Collapse':'＋ 建築學生說明 / For architecture students';
+
+// 當變更組別時，動態渲染該組的學生姓名下拉選單
+function onStudioChange(){
+  const studioVal = document.getElementById('studio').value;
+  const nameWrap = document.getElementById('student-name-wrap');
+  const nameSelect = document.getElementById('student-name');
+  
+  nameSelect.innerHTML = '<option value="">— 請選擇姓名 / Please select name —</option>';
+  
+  if(studioVal && STUDENT_LISTS[studioVal]){
+    STUDENT_LISTS[studioVal].forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      nameSelect.appendChild(opt);
+    });
+    nameWrap.style.display = 'block';
+  } else {
+    nameWrap.style.display = 'none';
+  }
 }
 
 // ── SUBMIT ─────────────────────────────────────────────────────────
@@ -522,9 +597,19 @@ async function submit(){
   if(selX===null){setStatus('請先定位座標 · Please position on quadrant first','err');return;}
   if(!selAge){setStatus('請選擇年齡 · Please select age range','err');return;}
   if(!selRole){setStatus('請選擇身份 · Please select role','err');return;}
-  const rawRole = selRole.split(' ')[0]; // "學生 Student" → "學生"
-  const studio=rawRole==='學生'?document.getElementById('studio').value:null;
-  if(rawRole==='學生'&&!studio){setStatus('請選擇組別 · Please select studio group','err');return;}
+  
+  const rawRole = selRole.split(' ')[0]; 
+  let finalName = '';
+  let studio = null;
+  
+  if(rawRole==='學生'){
+    studio = document.getElementById('studio').value;
+    if(!studio){setStatus('請選擇組別 · Please select studio group','err');return;}
+    finalName = document.getElementById('student-name').value;
+    if(!finalName){setStatus('請選擇您的姓名 · Please select your name','err');return;}
+  } else {
+    finalName = rawRole + '訪客';
+  }
 
   document.getElementById('submitBtn').disabled=true;
   setStatus('提交中 Submitting...','');
@@ -534,6 +619,7 @@ async function submit(){
     age:selAge,
     role:selRole,
     studio:studio||null,
+    name:finalName, // 蒐集學生個人姓名新欄位
     quadrant:(selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容')
   };
 
@@ -553,6 +639,8 @@ async function submit(){
       document.getElementById('coordPill').innerHTML='<span style="color:var(--g40)">尚未選擇 · Not yet positioned</span>';
       document.querySelectorAll('.pill').forEach(b=>b.classList.remove('sel'));
       document.getElementById('studio-wrap').style.display='none';
+      document.getElementById('student-name-wrap').style.display='none';
+      document.getElementById('non-student-name-wrap').style.display='none';
       document.getElementById('studio').value='';
     } else {
       const e=await r.text();
@@ -561,6 +649,7 @@ async function submit(){
   }catch(e){setStatus('Network error: '+e.message,'err');}
   document.getElementById('submitBtn').disabled=false;
 }
+
 function setStatus(m,t){
   const el=document.getElementById('statusMsg');
   el.textContent=m;el.className='status-msg'+(t?' s-'+t:'');
@@ -600,7 +689,8 @@ function render(raw){
     ['k-cx','k-cy','k-quad'].forEach(id=>document.getElementById(id).textContent='—');
     document.getElementById('trendBox').textContent='尚無資料 No data yet';
     drawScatter([]);
-    ['age','role','studio','quad'].forEach(k=>document.getElementById('bars-'+k).innerHTML='');
+    ['age','studio','quad'].forEach(k=>document.getElementById('bars-'+k).innerHTML='');
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="5" style="text-align:center;">無符合篩選條件的資料</td></tr>';
     return;
   }
   const cx=data.reduce((s,d)=>s+d.x,0)/n;
@@ -611,19 +701,22 @@ function render(raw){
   const mq=Object.entries(qmap).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById('k-quad').textContent=mq?mq[0]:'—';
 
+  // 1. 散佈圖（依組別上色）
   drawScatter(data);
 
-  // bars
-  renderBars('bars-age',data,'age',
-    ['18歲以下','18–25','26–35','36–50','51–65','65+'],null);
-  renderBars('bars-role',data,'role',
-    ['學生 Student','老師 Teacher','其他 Other'],ROLE_CLR);
+  // 2. 渲染下方列表資料表格
+  renderTable(data);
+
+  // 3. 將身分直條圖改為圓餅圖 (Pie Chart)
+  renderRolePie(data);
+
+  // 其他直條統計
+  renderBars('bars-age',data,'age', ['18歲以下','18–25','26–35','36–50','51–65','65+'],null);
   renderBars('bars-studio',data.filter(d=>d.role&&d.role.includes('學生')),'studio',
     ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],STUDIO_CLR);
-  renderBars('bars-quad',data,'quadrant',
-    ['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_CLR);
+  renderBars('bars-quad',data,'quadrant', ['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_CLR);
 
-  // trend
+  // 趨勢統計
   const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/n).toFixed(2);
   const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/n).toFixed(2);
   document.getElementById('trendBox').innerHTML=
@@ -632,21 +725,7 @@ function render(raw){
     `X dispersion ±${sx} — ${parseFloat(sx)<1.5?'concentrated 集中':'dispersed 分散'}<br>`+
     `Y dispersion ±${sy} — ${parseFloat(sy)<1.5?'concentrated 集中':'dispersed 分散'}<br>`+
     `Tendency 傾向：${cx>=0?'Sensibility 感性':'Rationality 理性'} · `+
-    `${cy>=0?'Criticality 批判':'Inclusivity 包容'}<br>`+
-    `ETI effect：${etiEffect(cx,cy)}`;
-}
-
-function etiEffect(cx,cy){
-  const p=[];
-  if(cx>1.5) p.push('O(openness)↑');
-  else if(cx<-1.5) p.push('D(density)↑');
-  if(cy>1.5) p.push('H(historical permeability)↓ inhibited');
-  else if(cy<-1.5) p.push('S(social integration)↓ inhibited');
-  if(cx>0&&cy>0) p.push('V(visual complexity)↑');
-  if(cx<0&&cy>0) p.push('F(functional stability)↑');
-  if(cx>0&&cy<0) p.push('U(user agency)↑');
-  if(cx<0&&cy<0) p.push('D(functional density)↑');
-  return p.length?p.join(', '):'neutral · 中性';
+    `${cy>=0?'Criticality 批判':'Inclusivity 包容'}`;
 }
 
 function renderBars(id,data,key,cats,clrMap){
@@ -654,7 +733,6 @@ function renderBars(id,data,key,cats,clrMap){
   const cnt={};cats.forEach(c=>cnt[c]=0);
   data.forEach(d=>{
     if(!d[key]) return;
-    // role stored as "學生 Student" — match
     const matched = cats.find(c=>d[key]===c||d[key].startsWith(c.split(' ')[0]));
     if(matched) cnt[matched]++;
   });
@@ -671,71 +749,126 @@ function renderBars(id,data,key,cats,clrMap){
   }).join('');
 }
 
+// ── 核心需求：身分改為 Pie Chart 圓餅圖 ──
+function renderRolePie(data){
+  const canvas = document.getElementById('rolePieCanvas');
+  const ctx = canvas.getContext('2d');
+  const counts = {'學生 Student': 0, '老師 Teacher': 0, '其他 Other': 0};
+  
+  data.forEach(d => {
+    if(d.role) {
+      if(d.role.includes('學生')) counts['學生 Student']++;
+      else if(d.role.includes('老師')) counts['老師 Teacher']++;
+      else counts['其他 Other']++;
+    }
+  });
+  
+  const total = data.length || 1;
+  ctx.clearRect(0,0,130,130);
+  
+  let startAngle = 0;
+  const radius = 60;
+  const cx = 65;
+  const cy = 65;
+  
+  // 繪製圓餅切片
+  Object.entries(counts).forEach(([role, val]) => {
+    if(val === 0) return;
+    const sliceAngle = (val / total) * 2 * Math.PI;
+    ctx.fillStyle = ROLE_CLR[role] || '#4a7a5c';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
+    ctx.closePath();
+    ctx.fill();
+    startAngle += sliceAngle;
+  });
+
+  // 渲染右側精緻圖例
+  const legendEl = document.getElementById('pieLegend');
+  legendEl.innerHTML = Object.entries(counts).map(([role, val]) => {
+    const pct = Math.round((val / total) * 100);
+    return `<div class="leg-item">
+      <div class="leg-dot" style="background:${ROLE_CLR[role]}"></div>
+      <span style="font-size:11px; font-family:var(--mono); color:var(--g60)">${role.split(' ')[0]}: ${val} (${pct}%)</span>
+    </div>`;
+  }).join('');
+}
+
+// ── 核心需求：點點改為組別上色 ──
 function drawScatter(data){
   const dc=document.getElementById('dashCanvas');
   const ctx=dc.getContext('2d');
   const DS=440;
   ctx.clearRect(0,0,DS,DS);
-  // tints
+  
   const tints=['#fff7ed25','#eff6ff25','#f0fdf425','#fdf4ff25'];
   [[0,0],[1,0],[0,1],[1,1]].forEach(([a,b],i)=>{
     ctx.fillStyle=tints[i];ctx.fillRect(a*DS/2,b*DS/2,DS/2,DS/2);
   });
-  // dot grid
   ctx.fillStyle='#e8e6e2';
   for(let xi=0;xi<=10;xi++) for(let yi=0;yi<=10;yi++){
     ctx.beginPath();ctx.arc(xi*DS/10,yi*DS/10,1,0,Math.PI*2);ctx.fill();
   }
-  // axes
   ctx.strokeStyle='#d4d2ce';ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(DS/2,0);ctx.lineTo(DS/2,DS);ctx.stroke();
   ctx.beginPath();ctx.moveTo(0,DS/2);ctx.lineTo(DS,DS/2);ctx.stroke();
-  // labels
   ctx.fillStyle='#9c9894';ctx.font='10px Inter,sans-serif';
   ctx.textAlign='center';ctx.fillText('批判 Criticality',DS/2,13);
   ctx.fillText('包容 Inclusivity',DS/2,DS-4);
   ctx.textAlign='left';ctx.fillText('理性',3,DS/2+4);
   ctx.textAlign='right';ctx.fillText('感性',DS-3,DS/2+4);
 
-  const getClr = d => {
-    if(d.role&&d.role.includes('學生')) return '#2563a8';
-    if(d.role&&d.role.includes('老師')) return '#b04a1f';
-    return '#4a7a5c';
+  // 取得該資料點對應組別的色彩配色
+  const getStudioClr = d => {
+    if(d.role && d.role.includes('學生') && d.studio) {
+      return STUDIO_CLR[d.studio] || '#2563a8'; 
+    }
+    return '#8a8885'; // 老師或其他身份則給予低調中性灰色
   };
 
-  // dots
   data.forEach(d=>{
     const px=(d.x+5)/10*DS, py=(1-(d.y+5)/10)*DS;
-    ctx.fillStyle=getClr(d);
-    ctx.globalAlpha=.45;
-    ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=getStudioClr(d);
+    ctx.globalAlpha=.75; // 調高透明度讓分組色彩更鮮明
+    ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
     ctx.globalAlpha=1;
   });
 
-  // centroid + std dev ellipse
   if(data.length>0){
     const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
     const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
     const px=(cx+5)/10*DS, py=(1-(cy+5)/10)*DS;
-    if(data.length>2){
-      const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/data.length);
-      const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/data.length);
-      ctx.strokeStyle='#c8860a30';ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.ellipse(px,py,sx/10*DS,sy/10*DS,0,0,Math.PI*2);ctx.stroke();
-    }
-    // crosshair
     ctx.strokeStyle='#c8860a50';ctx.lineWidth=.8;ctx.setLineDash([3,4]);
     ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,DS);ctx.stroke();
     ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(DS,py);ctx.stroke();
     ctx.setLineDash([]);
-    // square centroid marker
     ctx.fillStyle='#c8860a';
     ctx.fillRect(px-5,py-5,10,10);
     ctx.fillStyle='#ffffff';
     ctx.fillRect(px-2,py-2,4,4);
   }
 }
-drawScatter([]);
+
+// ── 核心需求：渲染全體名單數據表格 ──
+function renderTable(data) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = data.map(d => {
+    const name = d.name || '匿名訪客';
+    const role = d.role ? d.role.split(' ')[0] : '—';
+    const studio = d.studio ? d.studio : '—';
+    const coords = `(${d.x.toFixed(2)}, ${d.y.toFixed(2)})`;
+    const quad = d.quadrant || '—';
+    
+    return `<tr>
+      <td><strong>${name}</strong></td>
+      <td>${role}</td>
+      <td>${studio}</td>
+      <td>${coords}</td>
+      <td class="cell-quad">${quad}</td>
+    </tr>`;
+  }).join('');
+}
 
 // ── TAB ────────────────────────────────────────────────────────────
 function switchTab(tab,btn){
@@ -746,7 +879,6 @@ function switchTab(tab,btn){
   if(tab==='dashboard') loadDash();
 }
 
-// auto-refresh every 30s
 setInterval(()=>{
   if(document.getElementById('page-dashboard').classList.contains('active')) loadDash();
 },30000);
