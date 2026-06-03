@@ -4,19 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Confucius Temple Survey — 成大建築117級</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=300;400;500&family=DM+Mono:wght=300;400&family=Inter:wght=300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#111110;--g80:#3d3c3a;--g60:#6b6864;--g40:#9c9894;
   --g20:#d4d2ce;--g10:#e8e6e2;--g05:#f5f4f0;--w:#ffffff;
-  --c-student:#2563a8;--c-teacher:#b04a1f;--c-other:#4a7a5c;--c-centroid:#c8860a;
-  --sa:#2563a8;--sb:#b04a1f;--sc:#4a7a5c;--sd:#7c3f8f;--se:#c8860a;--sf:#1e7a8a;--sg:#8a4a1e;
-  --noto:"Noto Sans TC",sans-serif;--sans:"Inter",sans-serif;--mono:"DM Mono",monospace;
+  /* role colours — clean, non-clashing */
+  --c-student:#2563a8;   /* cool blue */
+  --c-teacher:#b04a1f;   /* terracotta */
+  --c-other:  #4a7a5c;   /* sage green */
+  --c-centroid:#c8860a;  /* warm amber */
+  /* quadrant tints */
+  --q1:#fff7ed;--q2:#eff6ff;--q3:#f0fdf4;--q4:#fdf4ff;
+  /* studio palette — 7 distinct but harmonious */
+  --sa:#2563a8;--sb:#b04a1f;--sc:#4a7a5c;--sd:#7c3f8f;
+  --se:#c8860a;--sf:#1e7a8a;--sg:#8a4a1e;
+  --noto:"Noto Sans TC",sans-serif;
+  --sans:"Inter",sans-serif;
+  --mono:"DM Mono",monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
 body{font-family:var(--sans);background:var(--w);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
 
+/* ── HEADER ── */
 header{
   padding:16px 36px;border-bottom:1px solid var(--g10);
   display:flex;align-items:center;gap:20px;flex-wrap:wrap;
@@ -25,120 +36,251 @@ header{
 .logo{font-size:13px;font-weight:500;letter-spacing:-.01em;color:var(--ink);}
 .logo span{color:var(--g40);font-weight:300;margin-left:6px;font-family:var(--mono);font-size:11px;}
 
+/* ── TABS ── */
 .tabs{
   display:flex;border-bottom:1px solid var(--g10);
-  background:var(--w);position:sticky;top:53px;z-index:50;padding:0 36px;
+  background:var(--w);position:sticky;top:53px;z-index:50;
+  padding:0 36px;
 }
 .tab{
   padding:13px 0;margin-right:28px;font-size:12px;font-weight:500;
   cursor:pointer;border:none;background:none;color:var(--g40);
-  border-bottom:2px solid transparent;letter-spacing:.02em;transition:all .12s;
+  border-bottom:2px solid transparent;letter-spacing:.02em;
+  transition:all .12s;
 }
 .tab.active{color:var(--ink);border-bottom-color:var(--ink);}
 .tab:hover:not(.active){color:var(--g60);}
 
+/* ── PAGES ── */
 .page{display:none;padding:36px 36px 72px;}
 .page.active{display:block;}
 
-.survey-wrap{display:grid;grid-template-columns:1fr 420px;gap:48px;max-width:1100px;align-items:start;}
+/* ── SURVEY layout ── */
+.survey-wrap{display:grid;grid-template-columns:1fr 440px;gap:48px;max-width:1200px;align-items:start;}
 @media(max-width:820px){.survey-wrap{grid-template-columns:1fr;}}
 
-.section-label{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--g40);margin-bottom:8px;}
+.section-label{
+  font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--g40);margin-bottom:8px;
+}
 .section-title{font-size:22px;font-weight:300;letter-spacing:-.02em;line-height:1.2;margin-bottom:4px;}
 .section-title-en{font-size:13px;color:var(--g60);font-weight:300;margin-bottom:18px;}
 
-.axis-card{background:var(--g05);border-radius:3px;padding:14px 16px;margin-bottom:10px;}
-.axis-tag{display:inline-block;font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--w);background:var(--ink);padding:2px 7px;border-radius:1px;margin-bottom:8px;}
+/* axis description cards */
+.axis-card{
+  background:var(--g05);border-radius:3px;padding:14px 16px;
+  margin-bottom:10px;
+}
+.axis-tag{
+  display:inline-block;font-size:9px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--w);background:var(--ink);
+  padding:2px 7px;border-radius:1px;margin-bottom:8px;
+}
 .axis-name{font-size:13px;font-weight:500;margin-bottom:3px;}
 .axis-desc-zh{font-family:var(--noto);font-size:12px;color:var(--g60);line-height:1.8;margin-bottom:4px;}
+.axis-desc-en{font-size:11px;color:var(--g40);font-style:italic;line-height:1.7;}
+.desc-toggle{font-size:10px;color:var(--c-student);cursor:pointer;margin-top:6px;display:inline-block;}
+.desc-extra{display:none;margin-top:8px;padding-top:8px;border-top:.5px solid var(--g20);}
+.desc-extra.show{display:block;}
 
+/* ── QUADRANT ── */
 .quad-outer{position:relative;display:block;}
-#quadCanvas{width:100%;aspect-ratio:1;cursor:crosshair;display:block;border:1px solid var(--g10);border-radius:4px;background:var(--w);}
-.coord-pill{margin-top:10px;padding:9px 14px;background:var(--g05);border-radius:3px;font-family:var(--mono);font-size:12px;color:var(--g60);display:flex;align-items:center;justify-content:space-between;}
+#quadCanvas{
+  width:100%;aspect-ratio:1;cursor:crosshair;display:block;
+  border:1px solid var(--g10);border-radius:4px;background:var(--w);
+}
+.coord-pill{
+  margin-top:10px;padding:9px 14px;background:var(--g05);
+  border-radius:3px;font-family:var(--mono);font-size:12px;color:var(--g60);
+  display:flex;align-items:center;justify-content:space-between;
+}
 .coord-pill span{color:var(--ink);font-weight:400;}
-.coord-pill .quad-name{font-size:10px;background:var(--ink);color:var(--w);padding:2px 8px;border-radius:1px;}
-
-.form-fields{margin-top:28px;}
-.field-block{margin-bottom:20px;}
-.field-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--g60);margin-bottom:7px;display:block;}
-.field-label span{font-size:9px;color:var(--g40);font-weight:300;margin-left:4px;}
-.pill-group{display:flex;flex-wrap:wrap;gap:7px;}
-.pill{padding:7px 14px;border:1px solid var(--g20);border-radius:2px;cursor:pointer;font-size:12px;color:var(--g60);transition:all .12s;}
-.pill.sel{background:var(--ink);color:var(--w);border-color:var(--ink);}
-
-select{
-  width:100%;padding:9px 12px;border:1px solid var(--g20);border-radius:2px;
-  font-size:13px;color:var(--ink);background:var(--w);
-  appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c9894' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+.coord-pill .quad-name{
+  font-size:10px;background:var(--ink);color:var(--w);
+  padding:2px 8px;border-radius:1px;
 }
 
-.submit-btn{width:100%;padding:13px;background:var(--ink);color:var(--w);border:none;border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.06em;cursor:pointer;margin-top:8px;}
-.submit-btn:disabled{opacity:.3;}
-.status-msg{margin-top:10px;font-size:12px;font-family:var(--mono);}.s-ok{color:var(--c-other);}.s-err{color:var(--c-teacher);}
+/* ── FORM ── */
+.form-fields{margin-top:28px;}
+.field-block{margin-bottom:20px;}
+.field-label{
+  font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--g60);margin-bottom:7px;display:block;
+}
+.field-label span{font-size:9px;color:var(--g40);font-weight:300;letter-spacing:.03em;text-transform:none;margin-left:4px;}
+.pill-group{display:flex;flex-wrap:wrap;gap:7px;}
+.pill{
+  padding:7px 14px;border:1px solid var(--g20);border-radius:2px;
+  cursor:pointer;font-size:12px;color:var(--g60);
+  transition:all .12s;user-select:none;line-height:1;
+}
+.pill.sel{background:var(--ink);color:var(--w);border-color:var(--ink);}
+.pill:hover:not(.sel){border-color:var(--g60);color:var(--ink);}
+select{
+  width:100%;padding:9px 12px;border:1px solid var(--g20);border-radius:2px;
+  font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--w);
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c9894' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;margin-bottom:10px;
+}
+select:focus{outline:none;border-color:var(--ink);}
 
+/* ── SUBMIT BUTTON ── */
+.submit-btn{
+  width:100%;padding:13px;background:var(--ink);color:var(--w);border:none;
+  border-radius:3px;font-family:var(--sans);font-size:12px;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:opacity .12s;
+  margin-top:8px;
+}
+.submit-btn:hover{opacity:.85;}
+.submit-btn:disabled{opacity:.3;cursor:default;}
+.status-msg{margin-top:10px;font-size:12px;font-family:var(--mono);}
+.s-ok{color:var(--c-other);}.s-err{color:var(--c-teacher);}
+
+/* ── DASHBOARD ── */
 .dash-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;max-width:1200px;}
 .dash-title{font-size:22px;font-weight:300;letter-spacing:-.02em;}
-.refresh-btn{padding:6px 12px;border:1px solid var(--g20);border-radius:2px;font-family:var(--mono);font-size:11px;color:var(--g60);background:none;cursor:pointer;}
+.refresh-btn{
+  padding:6px 12px;border:1px solid var(--g20);border-radius:2px;
+  font-family:var(--mono);font-size:11px;color:var(--g60);background:none;cursor:pointer;
+}
+.refresh-btn:hover{color:var(--ink);border-color:var(--g60);}
 .last-update{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--g40);}
 
+/* ── KPIS ── */
 .kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;max-width:1200px;}
-.kpi{background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:16px 20px;flex:1;min-width:110px;}
-.kpi-num{font-size:28px;font-weight:300;line-height:1;}
-.kpi-label{font-size:9px;font-weight:500;color:var(--g40);margin-top:5px;}
+.kpi{
+  background:var(--w);border:1px solid var(--g10);border-radius:3px;
+  padding:16px 20px;flex:1;min-width:110px;
+}
+.kpi-num{font-size:28px;font-weight:300;letter-spacing:-.03em;line-height:1;}
+.kpi-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--g40);margin-top:5px;}
 
-.filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;align-items:center;}
-.filter-label{font-size:10px;color:var(--g40);}
-.f-btn{padding:5px 12px;border:1px solid var(--g20);border-radius:2px;font-size:11px;cursor:pointer;color:var(--g60);background:none;}
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center;}
+.filter-label{font-size:10px;color:var(--g40);letter-spacing:.06em;margin-right:4px;}
+.f-btn{
+  padding:5px 12px;border:1px solid var(--g20);border-radius:2px;
+  font-size:11px;cursor:pointer;color:var(--g60);background:none;transition:all .12s;
+}
 .f-btn.active{background:var(--ink);color:var(--w);border-color:var(--ink);}
+.f-btn:hover:not(.active){border-color:var(--g60);color:var(--ink);}
+.f-btn[data-role="學生"].active{background:var(--c-student);border-color:var(--c-student);}
+.f-btn[data-role="老師"].active{background:var(--c-teacher);border-color:var(--c-teacher);}
+.f-btn[data-role="其他"].active{background:var(--c-other);border-color:var(--c-other);}
 
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1200px;}
+.student-select-wrap{display:flex;align-items:center;gap:8px;margin-bottom:22px;}
+.student-select-wrap select{width:240px;margin-bottom:0;padding:6px 12px;font-size:12px;}
+
+/* ── DASH GRID ── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1200px;margin-bottom:24px;}
 @media(max-width:740px){.dash-grid{grid-template-columns:1fr;}}
 .card{background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:20px 22px;}
 .card.span2{grid-column:span 2;}
 @media(max-width:740px){.card.span2{grid-column:span 1;}}
-.card-title{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--g40);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.card-title{
+  font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--g40);margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
 .card-title::after{content:'';flex:1;height:1px;background:var(--g10);}
+.card-sub{font-size:10px;color:var(--g40);margin-bottom:10px;font-style:italic;}
 
-.chart-container {position:relative;margin:auto;height:200px;width:200px;}
-.trend-box{background:var(--g05);border-radius:3px;padding:14px 16px;font-size:11px;color:var(--g60);line-height:1.9;margin-top:14px;font-family:var(--mono);}
-#dashCanvas{width:100%;aspect-ratio:1;display:block;border:1px solid var(--g10);border-radius:3px;}
+/* ── BAR CHART ── */
+.bar-row{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--g05);}
+.bar-row:last-child{border:none;}
+.bar-key{font-size:11px;color:var(--g60);width:82px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;height:4px;background:var(--g05);border-radius:2px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.bar-val{font-family:var(--mono);font-size:10px;color:var(--g40);width:22px;text-align:right;}
+
+/* ── PIE CHART CANVAS ── */
+.pie-container{display:flex;align-items:center;justify-content:center;gap:24px;padding:10px 0;}
+#rolePieCanvas{display:block;}
+.pie-legend{display:flex;flex-direction:column;gap:8px;font-size:11px;}
+
+/* ── TREND BOX ── */
+.trend-box{
+  background:var(--g05);border-radius:3px;padding:14px 16px;
+  font-size:11px;color:var(--g60);line-height:1.9;margin-top:14px;
+  font-family:var(--mono);
+}
+.trend-box strong{color:var(--ink);font-family:var(--sans);font-weight:500;}
+
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--g60);}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.leg-sq{width:9px;height:9px;border-radius:1px;flex-shrink:0;}
+
+/* ── SCATTER CANVAS ── */
+#dashCanvas{
+  width:100%;aspect-ratio:1;display:block;
+  border:1px solid var(--g10);border-radius:3px;background:var(--w);
+}
+
+/* ── DATATABLE ── */
+.table-card{max-width:1200px;background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:20px 22px;}
+.table-wrapper{overflow-x:auto;margin-top:12px;}
+table.resp-table{width:100%;border-collapse:collapse;font-size:12px;text-align:left;}
+table.resp-table th{padding:10px 12px;color:var(--g40);font-weight:500;border-bottom:1px solid var(--g20);font-size:10px;letter-spacing:.05em;text-transform:uppercase;}
+table.resp-table td{padding:10px 12px;color:var(--g80);border-bottom:1px solid var(--g05);white-space:nowrap;}
+table.resp-table tr:hover td{background:var(--g05);}
+table.resp-table .cell-quad{font-family:var(--mono);font-size:11px;}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">孔廟設計座標<span>NCKU Arch 117 · Studio IV</span></div>
+  <div class="logo">孔廟設計座標<span>NCKU Arch 117 · Studio IV · 2026</span></div>
 </header>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('survey',this)">定位調查 / Survey</button>
-  <button class="tab" onclick="switchTab('dashboard',this)">資料儀表板 / Dashboard</button>
+  <button class="tab active" onclick="switchTab('survey',this)">
+    定位調查 <span style="color:var(--g40);font-weight:300"> / Survey</span>
+  </button>
+  <button class="tab" onclick="switchTab('dashboard',this)">
+    資料儀表板 <span style="color:var(--g40);font-weight:300"> / Dashboard</span>
+  </button>
 </div>
 
 <div class="page active" id="page-survey">
 <div class="survey-wrap">
+
   <div>
     <div class="section-label">Survey · 問卷調查</div>
     <div class="section-title">用兩條軸線，講述你對孔廟的態度</div>
-    <div class="section-title-en">Position yourself on two axes to express your attitude</div>
+    <div class="section-title-en">Position yourself on two axes to express your attitude toward the Confucius Temple</div>
 
     <div class="axis-card">
-      <div class="axis-tag">X 軸</div>
+      <div class="axis-tag">X 軸 · X-Axis</div>
       <div class="axis-name">理性 Rationality ←→ 感性 Sensibility</div>
       <div class="axis-desc-zh">您如何看待孔廟的文化意義？偏向理性分析，還是感性直覺？</div>
+      <div class="axis-desc-en">How do you relate to the cultural significance of the Confucius Temple — through rational analysis or sensory intuition?</div>
+      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明 / For architecture students</div>
+      <div class="desc-extra">
+        <div class="axis-desc-zh">設計的論述、手法與議題 — 您的設計策略偏向邏輯推演（系統性、結構性）還是感知體驗（氛圍、材料、身體感）？</div>
+        <div class="axis-desc-en">Your design discourse, approach, and agenda — is your strategy driven by logical reasoning (systematic, structural) or sensory experience (atmosphere, materiality, bodily perception)?</div>
+      </div>
     </div>
+
     <div class="axis-card">
-      <div class="axis-tag">Y 軸</div>
+      <div class="axis-tag">Y 軸 · Y-Axis</div>
       <div class="axis-name">批判性 Criticality ←→ 包容性 Inclusivity</div>
       <div class="axis-desc-zh">您對孔廟現有狀態的態度？傾向質疑與轉化，還是接納與延續？</div>
+      <div class="axis-desc-en">What is your attitude toward the existing state of the Confucius Temple — questioning and transforming, or accepting and continuing?</div>
+      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明 / For architecture students</div>
+      <div class="desc-extra">
+        <div class="axis-desc-zh">對於整個土地的現有狀態，您是否有觸及與更動現有建物？或者您的動作與手法傾向於整合現況、保留原有結構？</div>
+        <div class="axis-desc-en">Does your intervention touch and alter existing structures, or does your approach tend to integrate and preserve the current condition?</div>
+      </div>
     </div>
 
     <div class="form-fields">
       <div class="section-label" style="margin-bottom:16px;">基本資料 · Respondent Info</div>
 
       <div class="field-block">
-        <label class="field-label">年齡區段</label>
+        <label class="field-label">年齡區段 <span>/ Age Range</span></label>
         <div class="pill-group" id="grp-age">
           <div class="pill" onclick="pick(this,'age')">18歲以下</div>
           <div class="pill" onclick="pick(this,'age')">18–25</div>
@@ -150,18 +292,18 @@ select{
       </div>
 
       <div class="field-block">
-        <label class="field-label">身份</label>
+        <label class="field-label">身份 <span>/ Role</span></label>
         <div class="pill-group" id="grp-role">
-          <div class="pill" onclick="onRoleSelect(this)">學生 Student</div>
-          <div class="pill" onclick="onRoleSelect(this)">老師 Teacher</div>
-          <div class="pill" onclick="onRoleSelect(this)">其他 Other</div>
+          <div class="pill" onclick="pick(this,'role');onRole(this)">學生 Student</div>
+          <div class="pill" onclick="pick(this,'role');onRole(this)">老師 Teacher</div>
+          <div class="pill" onclick="pick(this,'role');onRole(this)">其他 Other</div>
         </div>
       </div>
 
       <div class="field-block" id="studio-wrap" style="display:none;">
-        <label class="field-label">設計課組別老師 <span>/ Studio Teacher</span></label>
-        <select id="studio" onchange="onStudioSelect()">
-          <option value="">— 請選擇指導老師 / Please select —</option>
+        <label class="field-label">設計課組別 <span>/ Studio Group (students only)</span></label>
+        <select id="studio" onchange="onStudioChange()">
+          <option value="">— 請選擇組別 / Please select group —</option>
           <option value="A-王逸璇">A — 王逸璇 老師組</option>
           <option value="B-曾雅欣">B — 曾雅欣 老師組</option>
           <option value="C-許家茵">C — 許家茵 老師組</option>
@@ -170,34 +312,46 @@ select{
           <option value="F-蘇業森">F — 蘇業森 老師組</option>
           <option value="G-趙尉翔">G — 趙尉翔 老師組</option>
         </select>
+
+        <div id="student-name-wrap" style="display:none; margin-top:12px;">
+          <label class="field-label">學生個人姓名 <span>/ Student Name</span></label>
+          <select id="student-name">
+            <option value="">— 請選擇姓名 / Please select name —</option>
+          </select>
+        </div>
       </div>
 
-      <div class="field-block" id="name-wrap" style="display:none;">
-        <label class="field-label">學生姓名 <span>/ Student Name</span></label>
-        <select id="student-name">
-          <option value="">— 請選擇您的姓名 / Select Name —</option>
+      <div class="field-block" id="non-student-name-wrap" style="display:none;">
+        <label class="field-label">姓名 <span>/ Name (Optional)</span></label>
+        <select id="non-student-name">
+           <option value="訪客/老師">訪客/老師 (Anonymous/Teacher)</option>
         </select>
       </div>
 
-      <div class="field-block" id="visitor-name-wrap" style="display:none;">
-        <label class="field-label">稱呼/姓名 <span>/ Name</span></label>
-        <input type="text" id="visitor-name" placeholder="請輸入您的稱呼" style="width:100%; padding:9px 12px; border:1px solid var(--g20); border-radius:2px; font-size:13px;">
-      </div>
-
-      <button class="submit-btn" id="submitBtn" onclick="submit()">提交座標 · Submit Position →</button>
+      <button class="submit-btn" id="submitBtn" onclick="submit()">
+        提交座標 · Submit Position →
+      </button>
       <div class="status-msg" id="statusMsg"></div>
     </div>
   </div>
 
   <div>
-    <div class="section-label">Step 1 — 點擊定位 · Click to position</div>
-    <canvas id="quadCanvas" width="420" height="420"></canvas>
+    <div class="quad-label-row">
+      <div class="section-label">Step 1 — 點擊定位 · Click to position</div>
+    </div>
+    <div class="quad-outer">
+      <canvas id="quadCanvas" width="440" height="440"></canvas>
+    </div>
     <div class="coord-pill" id="coordPill">
       <span style="color:var(--g40)">尚未選擇 · Not yet positioned</span>
     </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--g40);line-height:1.7;font-style:italic;">
+      點擊象限上任意位置定位您的態度。<br>
+      Click anywhere on the quadrant to place your position.
+    </div>
   </div>
-</div>
-</div>
+
+</div></div>
 
 <div class="page" id="page-dashboard">
   <div class="dash-header">
@@ -206,29 +360,19 @@ select{
     <div class="last-update" id="lastUpdate"></div>
   </div>
 
-  <div class="card span2" style="margin-bottom: 20px;">
-    <div class="card-title">Individual Search · 已繳交名單與座標快速檢視</div>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-      <select id="dash-search-select" style="max-width: 350px;" onchange="highlightIndividual()">
-        <option value="">— 選擇已提交的填寫者查看位置 —</option>
-      </select>
-      <span id="search-info" style="font-size:12px; color:var(--sa); font-family:var(--mono); font-weight:500;"></span>
-    </div>
-  </div>
-
   <div class="kpi-row">
     <div class="kpi"><div class="kpi-num" id="k-total">—</div><div class="kpi-label">Total Responses · 總回應</div></div>
-    <div class="kpi"><div class="kpi-num" id="k-cx">—</div><div class="kpi-label">Avg X · 平均理感</div></div>
-    <div class="kpi"><div class="kpi-num" id="k-cy">—</div><div class="kpi-label">Avg Y · 平均批包</div></div>
-    <div class="kpi"><div class="kpi-num" id="k-quad">—</div><div class="kpi-label">Dominant · 主象限</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-cx">—</div><div class="kpi-label">Avg X · 平均理感軸</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-cy">—</div><div class="kpi-label">Avg Y · 平均批包軸</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-quad">—</div><div class="kpi-label">Dominant Quadrant · 主象限</div></div>
   </div>
 
   <div class="filter-bar">
-    <span class="filter-label">篩選 Filter：</span>
+    <span class="filter-label">群組篩選 Filter Group：</span>
     <button class="f-btn active" onclick="setFilter('all',this)">All · 全部</button>
-    <button class="f-btn" onclick="setFilter('role:學生 Student',this)">學生 Student</button>
-    <button class="f-btn" onclick="setFilter('role:老師 Teacher',this)">老師 Teacher</button>
-    <button class="f-btn" onclick="setFilter('role:其他 Other',this)">其他 Other</button>
+    <button class="f-btn" data-role="學生" onclick="setFilter('role:學生 Student',this)">學生 Student</button>
+    <button class="f-btn" data-role="老師" onclick="setFilter('role:老師 Teacher',this)">老師 Teacher</button>
+    <button class="f-btn" data-role="其他" onclick="setFilter('role:其他 Other',this)">其他 Other</button>
     <button class="f-btn" onclick="setFilter('studio:A-王逸璇',this)">A組</button>
     <button class="f-btn" onclick="setFilter('studio:B-曾雅欣',this)">B組</button>
     <button class="f-btn" onclick="setFilter('studio:C-許家茵',this)">C組</button>
@@ -238,41 +382,86 @@ select{
     <button class="f-btn" onclick="setFilter('studio:G-趙尉翔',this)">G組</button>
   </div>
 
+  <div class="student-select-wrap">
+    <span class="filter-label" style="color:var(--ink); font-weight:500;">個人檢視 Individual Search：</span>
+    <select id="dashStudentSelect" onchange="onStudentSelect(this.value)">
+      <option value="">— 選擇特定學生個人 / Select Student —</option>
+    </select>
+  </div>
+
   <div class="dash-grid">
+
     <div class="card" style="grid-row:span 2;">
-      <div class="card-title">Spatial Distribution · 座標分布</div>
+      <div class="card-title">Spatial Distribution · 組別座標分布</div>
       <canvas id="dashCanvas" width="440" height="440"></canvas>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sa)"></div>A組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sb)"></div>B組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sc)"></div>C組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sd)"></div>D組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--se)"></div>E組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sf)"></div>F組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--sg)"></div>G組</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#8a8885"></div>老師/其他</div>
+        <div class="leg-item"><div class="leg-sq" style="background:var(--c-centroid)"></div>重心 Centroid</div>
+        <div class="leg-item" id="legFocus" style="display:none;"><div class="leg-dot" style="background:#ffffff; border:2px solid var(--c-centroid); width:11px; height:11px;"></div>檢視焦點 Focus</div>
+      </div>
       <div class="trend-box" id="trendBox">載入中 Loading...</div>
     </div>
 
     <div class="card">
-      <div class="card-title">Age Distribution · 年齡分布 (Pie)</div>
-      <div class="chart-container"><canvas id="chart-age"></canvas></div>
+      <div class="card-title">Age Distribution · 年齡</div>
+      <div id="bars-age"></div>
     </div>
 
     <div class="card">
-      <div class="card-title">Role Distribution · 身份分布 (Pie)</div>
-      <div class="chart-container"><canvas id="chart-role"></canvas></div>
+      <div class="card-title">Role Distribution · 身份比例</div>
+      <div class="pie-container">
+        <canvas id="rolePieCanvas" width="130" height="130"></canvas>
+        <div class="pie-legend" id="pieLegend"></div>
+      </div>
     </div>
 
     <div class="card">
-      <div class="card-title">Studio Group · 設計組別分布 (Pie)</div>
-      <div class="chart-container"><canvas id="chart-studio"></canvas></div>
+      <div class="card-title">Studio Group · 設計組別</div>
+      <div class="card-sub">Students only · 僅限學生</div>
+      <div id="bars-studio"></div>
     </div>
 
     <div class="card">
-      <div class="card-title">Quadrant Distribution · 象限分布 (Pie)</div>
-      <div class="chart-container"><canvas id="chart-quad"></canvas></div>
+      <div class="card-title">Quadrant Distribution · 象限</div>
+      <div id="bars-quad"></div>
     </div>
   </div>
+
+  <div class="table-card">
+    <div class="card-title">Respondent Directory · 回應名單數據表</div>
+    <div class="table-wrapper">
+      <table class="resp-table" id="respTable">
+        <thead>
+          <tr>
+            <th>姓名 Name</th>
+            <th>身份 Role</th>
+            <th>設計組別 Studio</th>
+            <th>座標 (X, Y)</th>
+            <th>所在象限 Quadrant</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="5" style="text-align:center; color:var(--g40);">載入中 Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const SB = "https://ywuamzusgtmydgvlsxpv.supabase.co";
 const SK = "sb_publishable_C4u8NgyKacE5SrByLCQWTA_rBTkdJYr";
 
-// ── 🎯 117 級最新完備官方分組名單 ──
-const STUDIO_STUDENTS = {
+// ── 🟢 1. 已修正為對照表指定的正確名單 ──
+const STUDENT_LISTS = {
   "A-王逸璇": ["徐晴薽", "張盈甄", "李亦文", "周庭旭", "簡睿均", "吳宣儀", "詹昀庭", "陳霈盈", "黃劼"],
   "B-曾雅欣": ["張佩歆", "曾秭畇", "周新媛", "温仁睻", "謝昕妤", "周鈺娟", "高芙現", "黃筠嫺", "陳羿帆"],
   "C-許家茵": ["林倍辰", "于毓彤", "朱蕾潔", "毛琳", "王靖翔", "莊濰榛", "馮冠衡", "黃世澤", "林語珩"],
@@ -282,270 +471,421 @@ const STUDIO_STUDENTS = {
   "G-趙尉翔": ["劉凱君", "林映彤", "張幼蓁", "張稚涵", "黃郁芯", "林伊璇", "林虹廷", "詹致寧", "陳海祥"]
 };
 
-const PALETTE = ['#2563a8', '#b04a1f', '#4a7a5c', '#7c3f8f', '#c8860a', '#1e7a8a', '#8a4a1e'];
+const STUDIO_CLR = {
+  'A-王逸璇':'#2563a8','B-曾雅欣':'#b04a1f','C-許家茵':'#4a7a5c',
+  'D-周佳怡':'#7c3f8f','E-林中一':'#c8860a','F-蘇業森':'#1e7a8a','G-趙尉翔':'#8a4a1e'
+};
+const QUAD_CLR = {'感性×批判':'#2563a8','理性×批判':'#b04a1f','感性×包容':'#4a7a5c','理性×包容':'#7c3f8f'};
 
-let selX=null, selY=null, selAge=null, selRole=null;
-let allData=[], curFilter='all', highlightedId=null;
-let charts = {};
+// ── STATE ──
+let selX=null,selY=null,selAge=null,selRole=null;
+let allData=[],curFilter='all',selectedStudentName='';
 
-// ── 選擇身份邏輯 ──
-function onRoleSelect(el) {
-  document.querySelectorAll('#grp-role .pill').forEach(b=>b.classList.remove('sel'));
-  el.classList.add('sel');
-  selRole = el.textContent;
-  
-  const isStudent = selRole.includes('學生');
-  if(isStudent) {
-    document.getElementById('studio-wrap').style.display = 'block';
-    document.getElementById('visitor-name-wrap').style.display = 'none';
-    document.getElementById('studio').value = ""; 
-    document.getElementById('name-wrap').style.display = 'none';
-  } else {
-    document.getElementById('studio-wrap').style.display = 'none';
-    document.getElementById('name-wrap').style.display = 'none';
-    document.getElementById('visitor-name-wrap').style.display = 'block';
+// ── 🎯 2. 核心繪圖模組：繪製精準的格線、軸線與象限文字 ──
+function drawBaseMetrics(ctx, size) {
+  const tints=['#fff7ed40','#eff6ff40','#f0fdf440','#fdf4ff40'];
+  [[0,0],[1,0],[0,1],[1,1]].forEach(([a,b],i)=>{
+    ctx.fillStyle=tints[i];
+    ctx.fillRect(a*size/2, b*size/2, size/2, size/2);
+  });
+
+  ctx.fillStyle='#e8e6e2';
+  for(let xi=0; xi<=10; xi++) {
+    for(let yi=0; yi<=10; yi++){
+      ctx.beginPath(); ctx.arc(xi*size/10, yi*size/10, 1, 0, Math.PI*2); ctx.fill();
+    }
   }
+
+  ctx.strokeStyle='#d4d2ce'; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(size/2,0); ctx.lineTo(size/2,size); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,size/2); ctx.lineTo(size,size/2); ctx.stroke();
+
+  ctx.fillStyle='#9c9894';
+  ctx.font='11px "Inter", "Noto Sans TC", sans-serif';
+  ctx.textBaseline='middle';
+
+  ctx.textAlign='center'; ctx.fillText('批判 Criticality', size/2, 16);
+  ctx.textAlign='center'; ctx.fillText('包容 Inclusivity', size/2, size - 16);
+  ctx.textAlign='left'; ctx.fillText('理性', 14, size/2);
+  ctx.textAlign='right'; ctx.fillText('感性', size - 14, size/2);
+
+  ctx.fillStyle='#d4d2ce';
+  ctx.font='9px "DM Mono", monospace';
+  ctx.textAlign='left'; ctx.fillText('理×批', 14, 34);
+  ctx.textAlign='right'; ctx.fillText('感×批', size - 14, 34);
+  ctx.textAlign='left'; ctx.fillText('理×包', 14, size - 34);
+  ctx.textAlign='right'; ctx.fillText('感×包', size - 14, size - 34);
 }
 
-// ── 選擇組別，跳出對應學生名單 ──
-function onStudioSelect() {
-  const studioVal = document.getElementById('studio').value;
-  const nameWrap = document.getElementById('name-wrap');
-  const studentSelect = document.getElementById('student-name');
-  
-  studentSelect.innerHTML = '<option value="">— 請選擇您的姓名 / Select Name —</option>';
-  
-  if(studioVal && STUDIO_STUDENTS[studioVal]) {
-    nameWrap.style.display = 'block';
-    STUDIO_STUDENTS[studioVal].forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      studentSelect.appendChild(opt);
-    });
-  } else {
-    nameWrap.style.display = 'none';
+// ── SURVEY CANVAS ──
+const qc=document.getElementById('quadCanvas');
+const qctx=qc.getContext('2d');
+const QS=444;
+
+function drawQ(dx,dy){
+  qctx.clearRect(0,0,QS,QS);
+  drawBaseMetrics(qctx, QS);
+
+  if(dx!==null){
+    const px=(dx+5)/10*QS, py=(1-(dy+5)/10)*QS;
+    qctx.strokeStyle='#11111015'; qctx.lineWidth=.8; qctx.setLineDash([3,4]);
+    qctx.beginPath(); qctx.moveTo(px,0); qctx.lineTo(px,QS); qctx.stroke();
+    qctx.beginPath(); qctx.moveTo(0,py); qctx.lineTo(QS,py); qctx.stroke();
+    qctx.setLineDash([]);
+    
+    qctx.strokeStyle='#11111020'; qctx.lineWidth=8;
+    qctx.beginPath(); qctx.arc(px,py,14,0,Math.PI*2); qctx.stroke();
+    qctx.fillStyle='#111110';
+    qctx.beginPath(); qctx.arc(px,py,7,0,Math.PI*2); qctx.fill();
+    qctx.fillStyle='#ffffff';
+    qctx.beginPath(); qctx.arc(px,py,2.5,0,Math.PI*2); qctx.fill();
   }
+}
+drawQ(null,null);
+
+qc.addEventListener('click',e=>{
+  const r=qc.getBoundingClientRect();
+  const s=QS/r.width;
+  const px=(e.clientX-r.left)*s, py=(e.clientY-r.top)*s;
+  selX=parseFloat(((px/QS)*10-5).toFixed(2));
+  selY=parseFloat(((1-py/QS)*10-5).toFixed(2));
+  drawQ(selX,selY);
+  const qname=(selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容');
+  document.getElementById('coordPill').innerHTML=
+    `X = <span>${selX}</span> &nbsp; Y = <span>${selY}</span> `+
+    `<span class="quad-name">${qname}</span>`;
+});
+
+function toggleDesc(el) {
+  const extra = el.nextElementSibling;
+  extra.classList.toggle('show');
+  el.textContent = extra.classList.contains('show') ? '－ 隱藏說明 / Hide details' : '＋ 建築學生說明 / For architecture students';
 }
 
 function pick(el,grp){
   document.querySelectorAll(`#grp-${grp} .pill`).forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
   if(grp==='age') selAge=el.textContent;
+  if(grp==='role') selRole=el.textContent;
 }
 
-// ── 問卷 Canvas 定位邏輯 ──
-const qc=document.getElementById('quadCanvas');const qctx=qc.getContext('2d');const QS=420;
-function drawQ(dx,dy){
-  qctx.clearRect(0,0,QS,QS);
-  qctx.fillStyle='#f5f4f0';qctx.fillRect(0,0,QS,QS);
-  qctx.strokeStyle='#d4d2ce';qctx.lineWidth=1;
-  qctx.beginPath();qctx.moveTo(QS/2,0);qctx.lineTo(QS/2,QS);qctx.moveTo(0,QS/2);qctx.lineTo(QS,QS/2);qctx.stroke();
-  if(dx!==null){
-    const px=(dx+5)/10*QS, py=(1-(dy+5)/10)*QS;
-    qctx.fillStyle='#111110';qctx.beginPath();qctx.arc(px,py,6,0,Math.PI*2);qctx.fill();
-  }
+function onRole(el){
+  const isStudent = el.textContent.includes('學生');
+  document.getElementById('studio-wrap').style.display = isStudent ? 'block' : 'none';
+  document.getElementById('non-student-name-wrap').style.display = !isStudent ? 'block' : 'none';
 }
-drawQ(null,null);
-qc.addEventListener('click',e=>{
-  const r=qc.getBoundingClientRect();const s=QS/r.width;
-  const px=(e.clientX-r.left)*s, py=(e.clientY-r.top)*s;
-  selX=parseFloat(((px/QS)*10-5).toFixed(2));selY=parseFloat(((1-py/QS)*10-5).toFixed(2));
-  drawQ(selX,selY);
-  document.getElementById('coordPill').innerHTML=`X: <span>${selX}</span>, Y: <span>${selY}</span>`;
-});
 
-// ── 資料提交 ──
-async function submit(){
-  if(selX===null || !selAge || !selRole) { alert('請填妥座標、年齡與身份！'); return; }
+function onStudioChange(){
+  const studioVal = document.getElementById('studio').value;
+  const nameWrap = document.getElementById('student-name-wrap');
+  const nameSelect = document.getElementById('student-name');
+  nameSelect.innerHTML = '<option value="">— 請選擇姓名 / Please select name —</option>';
   
-  let finalName = "";
-  let studioVal = null;
-  const isStudent = selRole.includes('學生');
-  
-  if(isStudent) {
-    studioVal = document.getElementById('studio').value;
-    finalName = document.getElementById('student-name').value;
-    if(!studioVal || !finalName) { alert('請選取組別與姓名！'); return; }
+  if(studioVal && STUDENT_LISTS[studioVal]){
+    STUDENT_LISTS[studioVal].forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name; opt.textContent = name;
+      nameSelect.appendChild(opt);
+    });
+    nameWrap.style.display = 'block';
   } else {
-    finalName = document.getElementById('visitor-name').value.trim();
-    if(!finalName) { alert('請輸入您的姓名或稱呼！'); return; }
+    nameWrap.style.display = 'none';
   }
+}
+
+async function submit(){
+  if(selX===null){setStatus('請先定位座標 · Please position on quadrant first','err');return;}
+  if(!selAge){setStatus('請選擇年齡 · Please select age range','err');return;}
+  if(!selRole){setStatus('請選擇身份 · Please select role','err');return;}
   
-  const row = {
-    x: selX, y: selY, age: selAge, role: selRole.split(' ')[0],
-    studio: studioVal, name: finalName,
-    quadrant: (selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容')
+  const rawRole = selRole.split(' ')[0]; 
+  let finalName = '', studio = null;
+  
+  if(rawRole==='學生'){
+    studio = document.getElementById('studio').value;
+    if(!studio){setStatus('請選擇組別 · Please select studio group','err');return;}
+    finalName = document.getElementById('student-name').value;
+    if(!finalName){setStatus('請選擇您的姓名 · Please select your name','err');return;}
+  } else {
+    finalName = rawRole + '訪客';
+  }
+
+  document.getElementById('submitBtn').disabled=true;
+  setStatus('提交中 Submitting...','');
+
+  const row={
+    x:selX, y:selY, age:selAge, role:selRole, studio:studio||null, name:finalName, 
+    quadrant:(selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容')
   };
 
-  document.getElementById('submitBtn').disabled = true;
-  try {
-    const r = await fetch(`${SB}/rest/v1/responses`, {
-      method: 'POST',
-      headers: { 'apikey': SK, 'Authorization': 'Bearer '+SK, 'Content-Type': 'application/json' },
-      body: JSON.stringify(row)
+  try{
+    const r=await fetch(`${SB}/rest/v1/responses`,{
+      method:'POST',
+      headers:{
+        'apikey':SK,'Authorization':'Bearer '+SK,
+        'Content-Type':'application/json','Prefer':'return=minimal'
+      },
+      body:JSON.stringify(row)
     });
-    if(r.ok || r.status===201) {
-      alert('✓ 座標提交成功！');
-      location.reload();
-    } else { alert('提交失敗，請檢查資料庫政策。'); }
-  } catch(e) { alert('網路錯誤'); }
-  document.getElementById('submitBtn').disabled = false;
+    if(r.ok||r.status===201){
+      setStatus('✓ 提交成功 Submitted — 感謝您的參與 Thank you!','ok');
+      selX=null;selY=null;selAge=null;selRole=null;
+      drawQ(null,null);
+      document.getElementById('coordPill').innerHTML='<span style="color:var(--g40)">尚未選擇 · Not yet positioned</span>';
+      document.querySelectorAll('.pill').forEach(b=>b.classList.remove('sel'));
+      document.getElementById('studio-wrap').style.display='none';
+      document.getElementById('student-name-wrap').style.display='none';
+      document.getElementById('non-student-name-wrap').style.display='none';
+      document.getElementById('studio').value='';
+    } else {
+      const e=await r.text(); setStatus('Error '+r.status+': '+e.slice(0,100),'err');
+    }
+  } catch(e){setStatus('Network error: '+e.message,'err');}
+  document.getElementById('submitBtn').disabled=false;
 }
 
-// ── 儀表板數據讀取與圓餅圖渲染 ──
+function setStatus(m,t){
+  const el=document.getElementById('statusMsg');
+  el.textContent=m;el.className='status-msg'+(t?' s-'+t:'');
+}
+
+// ── DASHBOARD LOGIC ──
 async function loadDash(){
   try{
-    const r=await fetch(`${SB}/rest/v1/responses?select=*&order=created_at.desc`,{
+    const r=await fetch(`${SB}/rest/v1/responses?select=*&order=created_at.desc&limit=5000`,{
       headers:{'apikey':SK,'Authorization':'Bearer '+SK}
     });
     allData=await r.json();
     if(!Array.isArray(allData)) allData=[];
-    updateSearchSelect(allData);
-  }catch(e){allData=[];}
-  document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString();
+  } catch(e){allData=[];}
+  document.getElementById('lastUpdate').textContent=
+    new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+    
+  buildStudentSelect(allData);
   render(allData);
 }
 
-function updateSearchSelect(data) {
-  const select = document.getElementById('dash-search-select');
-  select.innerHTML = '<option value="">— 選擇已提交的填寫者查看位置 —</option>';
-  data.forEach(item => {
+// 動態建立儀表板上的學生個人選單
+function buildStudentSelect(data) {
+  const select = document.getElementById('dashStudentSelect');
+  select.innerHTML = '<option value="">— 選擇特定學生個人 / Select Student —</option>';
+  
+  // 過濾出有明確名字、非普通訪客的數據
+  const students = data.filter(d => d.role && d.role.includes('學生') && d.name);
+  // 由姓名排序
+  students.sort((a,b) => a.name.localeCompare(b.name, 'zh-TW'));
+  
+  students.forEach(s => {
     const opt = document.createElement('option');
-    opt.value = item.id;
-    const info = item.studio ? ` (${item.studio.split('-')[0]}組)` : '';
-    opt.textContent = `${item.name || '未填名'} - ${item.role}${info}`;
+    opt.value = s.name;
+    opt.textContent = `${s.name} (${s.studio ? s.studio.split('-')[0] : '無組別'})`;
     select.appendChild(opt);
   });
 }
 
-function highlightIndividual() {
-  const id = document.getElementById('dash-search-select').value;
-  const infoSpan = document.getElementById('search-info');
-  if(!id) { highlightedId = null; infoSpan.textContent = ""; render(allData); return; }
-  highlightedId = parseInt(id);
-  const target = allData.find(d => d.id === highlightedId);
-  if(target) infoSpan.textContent = `📍 檢視中: ${target.name} (X:${target.x}, Y:${target.y})`;
+function onStudentSelect(name) {
+  selectedStudentName = name;
+  document.getElementById('legFocus').style.display = name ? 'flex' : 'none';
   render(allData);
 }
 
 function setFilter(f,btn){
   curFilter=f;
+  selectedStudentName = ''; // 切換群組篩選時，重設個人焦點
+  document.getElementById('dashStudentSelect').value = '';
+  document.getElementById('legFocus').style.display = 'none';
   document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   render(allData);
 }
 
-function updatePie(id, labels, values) {
-  if(charts[id]) charts[id].destroy();
-  const ctx = document.getElementById(id).getContext('2d');
-  charts[id] = new Chart(ctx, {
-    type: 'pie',
-    data: { labels: labels, datasets: [{ data: values, backgroundColor: PALETTE }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } } }
-  });
+function filtered(data){
+  if(curFilter==='all') return data;
+  const[k,v]=curFilter.split(':');
+  return data.filter(d=>d[k]===v);
 }
 
 function render(raw){
-  const data = curFilter==='all'? raw : raw.filter(d => {
-    const [k,v] = curFilter.split(':');
-    return d[k] && d[k].startsWith(v.split(' ')[0]);
-  });
-  
-  const n = data.length;
-  document.getElementById('k-total').textContent = n;
-  
-  if(n===0) {
+  const data=filtered(raw);
+  const n=data.length;
+  document.getElementById('k-total').textContent=n;
+  if(n===0){
+    ['k-cx','k-cy','k-quad'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('trendBox').textContent='尚無資料 No data yet';
     drawScatter([]);
-    document.getElementById('k-cx').textContent = '—';
-    document.getElementById('k-cy').textContent = '—';
-    document.getElementById('k-quad').textContent = '—';
-    document.getElementById('trendBox').textContent = '尚無此篩選條件下的資料點。';
+    ['age','studio','quad'].forEach(k=>document.getElementById('bars-'+k).innerHTML='');
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="5" style="text-align:center;">無符合篩選條件的資料</td></tr>';
     return;
   }
+  const cx=data.reduce((s,d)=>s+d.x,0)/n;
+  const cy=data.reduce((s,d)=>s+d.y,0)/n;
+  document.getElementById('k-cx').textContent=(cx>=0?'+':'')+cx.toFixed(2);
+  document.getElementById('k-cy').textContent=(cy>=0?'+':'')+cy.toFixed(2);
+  const qmap={};data.forEach(d=>{const q=d.quadrant||'?';qmap[q]=(qmap[q]||0)+1;});
+  const mq=Object.entries(qmap).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('k-quad').textContent=mq?mq[0]:'—';
 
-  const cx = data.reduce((s,d)=>s+d.x,0)/n;
-  const cy = data.reduce((s,d)=>s+d.y,0)/n;
-  document.getElementById('k-cx').textContent = cx.toFixed(2);
-  document.getElementById('k-cy').textContent = cy.toFixed(2);
-
-  const qCounts = {};
-  data.forEach(d => { if(d.quadrant) qCounts[d.quadrant] = (qCounts[d.quadrant]||0)+1; });
-  let maxQ = '—', maxV = 0;
-  for(let q in qCounts) { if(qCounts[q] > maxV) { maxV = qCounts[q]; maxQ = q; } }
-  document.getElementById('k-quad').textContent = maxQ;
-
-  document.getElementById('trendBox').innerHTML = `目前的數據平均落在：<b>X: ${cx.toFixed(2)}, Y: ${cy.toFixed(2)}</b><br>主要設計風格傾向：<b>${maxQ}</b>`;
-
-  // 繪製點與十字虛線
+  // 3. 渲染畫布與統計圖表
   drawScatter(data);
+  renderTable(data);
+  renderRolePie(data);
 
-  // 1. 年齡圓餅圖
-  const ageK = ['18歲以下','18–25','26–35','36–50','51–65','65+'];
-  updatePie('chart-age', ageK, ageK.map(k=>data.filter(d=>d.age===k).length));
+  renderBars('bars-age',data,'age', ['18歲以下','18–25','26–35','36–50','51–65','65+'],null);
+  renderBars('bars-studio',data.filter(d=>d.role&&d.role.includes('學生')),'studio',
+    ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],STUDIO_CLR);
+  renderBars('bars-quad',data,'quadrant', ['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_CLR);
 
-  // 2. 身份圓餅圖
-  const roleK = ['學生','老師','其他'];
-  updatePie('chart-role', roleK, roleK.map(k=>data.filter(d=>d.role===k).length));
+  // 3. 擴充散點圖分析視窗的內容細節
+  const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/n).toFixed(2);
+  const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/n).toFixed(2);
+  
+  let htmlAnalysis = `<strong>Trend Analysis · 趨勢分析（群組數據 n=${n}）</strong><br>`+
+    `群組重心 Centroid：(${cx.toFixed(2)}, ${cy.toFixed(2)})<br>`+
+    `X軸標準差 Dispersion ±${sx} — ${parseFloat(sx)<1.6?'數據高度集中 concentrated':'分布較為分散 dispersed'}<br>`+
+    `Y軸標準差 Dispersion ±${sy} — ${parseFloat(sy)<1.5?'數據高度集中 concentrated':'分布較為分散 dispersed'}<br>`+
+    `主要思想傾向 Tendency：${cx>=0?'Sensibility 感性傾向':'Rationality 理性傾向'} × ${cy>=0?'Criticality 批判思維':'Inclusivity 包容思維'}`;
 
-  // 3. 組別圓餅圖
-  const stdK = ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'];
-  updatePie('chart-studio', stdK.map(k=>k.split('-')[0]+'組'), stdK.map(k=>data.filter(d=>d.studio===k).length));
-
-  // 4. 象限圓餅圖
-  const qdK = ['感性×批判','理性×批判','感性×包容','理性×包容'];
-  updatePie('chart-quad', qdK, qdK.map(k=>data.filter(d=>d.quadrant===k).length));
+  // 如果選取了特定學生，於分析盒額外疊加顯示個人資料
+  if(selectedStudentName) {
+    const sMatch = raw.find(d => d.name === selectedStudentName);
+    if(sMatch) {
+      htmlAnalysis += `<br><br><span style="color:var(--c-centroid)"><strong>🎯 個人檢視焦點 Focus: ${sMatch.name}</strong></span><br>`+
+        `設計課組別 Studio：${sMatch.studio ? sMatch.studio : '無'}<br>`+
+        `定位座標位置 Position：(${sMatch.x}, ${sMatch.y})<br>`+
+        `思想歸屬象限 Quadrant：${sMatch.quadrant}`;
+    }
+  }
+  document.getElementById('trendBox').innerHTML = htmlAnalysis;
 }
 
-function drawScatter(data){
-  const dc=document.getElementById('dashCanvas');const ctx=dc.getContext('2d');const DS=440;
-  ctx.clearRect(0,0,DS,DS);
-  
-  // 背景與主要軸線
-  ctx.fillStyle='#f5f4f0';ctx.fillRect(0,0,DS,DS);
-  ctx.strokeStyle='#e8e6e2';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(DS/2,0);ctx.lineTo(DS/2,DS);ctx.moveTo(0,DS/2);ctx.lineTo(DS,DS/2);ctx.stroke();
+function renderBars(id,data,key,cats,clrMap){
+  const n=data.length||1;
+  const cnt={};cats.forEach(c=>cnt[c]=0);
+  data.forEach(d=>{
+    if(!d[key]) return;
+    const matched = cats.find(c=>d[key]===c||d[key].startsWith(c.split(' ')[0]));
+    if(matched) cnt[matched]++;
+  });
+  document.getElementById(id).innerHTML=cats.map(c=>{
+    const v=cnt[c]||0;
+    const pct=Math.round(v/n*100);
+    const clr=clrMap?clrMap[c]||'#4c4948':'#4c4948';
+    const lbl=c.length>10?c.slice(0,9)+'…':c;
+    return `<div class="bar-row">
+      <div class="bar-key">${lbl}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${clr};"></div></div>
+      <div class="bar-val">${v}</div>
+    </div>`;
+  }).join('');
+}
 
-  // 繪製所有人交上來的座標點
+// ── 🎯 3. DASHBOARD SCATTER CANVAS ──
+function drawScatter(data){
+  const dc=document.getElementById('dashCanvas');
+  const ctx=dc.getContext('2d');
+  const DS=440;
+  ctx.clearRect(0,0,DS,DS);
+
+  // 調用統一底圖標記（確保軸線名稱及象限完整呈現）
+  drawBaseMetrics(ctx, DS);
+
+  // 繪製群組所有點陣
   data.forEach(d=>{
     const px=(d.x+5)/10*DS, py=(1-(d.y+5)/10)*DS;
-    const isHighlight = (d.id === highlightedId);
+    let clr='#8a8885';
+    if(d.role&&d.role.includes('學生')&&d.studio) clr=STUDIO_CLR[d.studio]||'#2563a8';
+    else if(d.role&&d.role.includes('老師')) clr='#b04a1f';
     
-    ctx.fillStyle = isHighlight ? '#ff003c' : (d.role === '老師' ? 'var(--c-teacher)' : 'var(--c-student)');
-    ctx.beginPath();
-    ctx.arc(px, py, isHighlight ? 8 : 4.5, 0, Math.PI*2);
-    ctx.fill();
-
-    if(isHighlight) {
-      ctx.strokeStyle = '#ffffff';ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.fillStyle='#111110';ctx.font='bold 11px sans-serif';
-      ctx.fillText(d.name, px+11, py+4);
-    }
+    ctx.fillStyle=clr; ctx.beginPath(); ctx.arc(px,py,4.5,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=.5; ctx.stroke();
   });
 
-  // 計算並繪製群體平均中心點 (Centroid) 的十字虛線與方塊
-  if(data.length > 0){
+  // 繪製群組整體重心十字虛線與黃色方塊標記
+  if(data.length>0){
     const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
     const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
     const px=(cx+5)/10*DS, py=(1-(cy+5)/10)*DS;
-
-    // 畫十字虛線
-    ctx.strokeStyle='rgba(200,134,10,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
-    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,DS);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(DS,py);ctx.stroke();
-    ctx.setLineDash([]); // 恢復實線
-
-    // 畫黃色中心方塊
-    ctx.fillStyle='var(--c-centroid)';ctx.fillRect(px-5,py-5,10,10);
-    ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.strokeRect(px-5,py-5,10,10);
+    
+    ctx.strokeStyle='#c8860a50'; ctx.lineWidth=.8; ctx.setLineDash([3,4]);
+    ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,DS); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(DS,py); ctx.stroke();
+    ctx.setLineDash([]);
+    
+    ctx.fillStyle='#c8860a'; ctx.fillRect(px-5,py-5,10,10);
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.5; ctx.strokeRect(px-5,py-5,10,10);
   }
+
+  // 🎯 重點強化：如果選單選取了學生個人，特別加粗畫圈突顯其位置
+  if(selectedStudentName) {
+    const studentData = allData.find(d => d.name === selectedStudentName);
+    if(studentData) {
+      const px=(studentData.x+5)/10*DS, py=(1-(studentData.y+5)/10)*DS;
+      ctx.strokeStyle='var(--c-centroid)'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.arc(px,py,10,0,Math.PI*2); ctx.stroke();
+      ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='var(--ink)'; ctx.beginPath(); ctx.arc(px,py,2,0,Math.PI*2); ctx.fill();
+    }
+  }
+}
+
+// ── 🎯 3. 身分資料以 PIE CHART 呈現 ──
+function drawRolePie(data){
+  const canvas=document.getElementById('rolePieCanvas');
+  const ctx=canvas.getContext('2d');
+  const legendEl=document.getElementById('pieLegend');
+  ctx.clearRect(0,0,130,130);
+  
+  const roles=['學生 Student','老師 Teacher','其他 Other'];
+  const counts=[0,0,0];
+  data.forEach(d=>{
+    if(d.role&&d.role.includes('學生')) counts[0]++;
+    else if(d.role&&d.role.includes('老師')) counts[1]++;
+    else counts[2]++;
+  });
+  
+  const total=data.length||1;
+  let startAngle=0;
+  const clrs=['#2563a8','#b04a1f','#4a7a5c'];
+  
+  counts.forEach((cnt,i)=>{
+    const sliceAngle=(cnt/total)*Math.PI*2;
+    if(sliceAngle>0){
+      ctx.fillStyle=clrs[i]; ctx.beginPath(); ctx.moveTo(65,65);
+      ctx.arc(65,65,60,startAngle,startAngle+sliceAngle); ctx.lineTo(65,65); ctx.fill();
+      startAngle+=sliceAngle;
+    }
+  });
+  
+  legendEl.innerHTML=roles.map((r,i)=>{
+    const pct=Math.round(counts[i]/total*100);
+    return `<div class="leg-item">
+      <div class="leg-dot" style="background:${clrs[i]}"></div>
+      <span>${r.split(' ')[0]} ${pct}% <small style="color:var(--g40)">(${counts[i]})</small></span>
+    </div>`;
+  }).join('');
+}
+
+function renderTable(data){
+  const tbody=document.getElementById('tableBody');
+  tbody.innerHTML=data.map(d=>{
+    const sName = d.name || '訪客';
+    const sStudio = d.studio ? d.studio.split('-')[0]+'組' : '—';
+    // 若該學生為目前的查詢焦點，將該橫列加上背景色強調
+    const rowStyle = (selectedStudentName && d.name === selectedStudentName) ? 'style="background:var(--q1); font-weight:500;"' : '';
+    return `<tr ${rowStyle}>
+      <td><b>${sName}</b></td>
+      <td>${d.role||'其他'}</td>
+      <td>${sStudio}</td>
+      <td>(${d.x}, ${d.y})</td>
+      <td class="cell-quad" style="color:${QUAD_CLR[d.quadrant]||'inherit'}">${d.quadrant||'—'}</td>
+    </tr>`;
+  }).join('');
 }
 
 function switchTab(tab,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');document.getElementById('page-'+tab).classList.add('active');
+  btn.classList.add('active'); document.getElementById('page-'+tab).classList.add('active');
   if(tab==='dashboard') loadDash();
 }
 </script>
