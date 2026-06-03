@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Confucius Temple Survey — 成大建築117級</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- 引入 Chart.js 用於繪製圓餅圖 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
@@ -117,7 +116,6 @@ select{
   <button class="tab" onclick="switchTab('dashboard',this)">資料儀表板 / Dashboard</button>
 </div>
 
-<!-- ══════════ SURVEY 頁面 ══════════ -->
 <div class="page active" id="page-survey">
 <div class="survey-wrap">
   <div>
@@ -160,7 +158,6 @@ select{
         </div>
       </div>
 
-      <!-- 連動選單：選擇指導老師（僅學生顯示） -->
       <div class="field-block" id="studio-wrap" style="display:none;">
         <label class="field-label">設計課組別老師 <span>/ Studio Teacher</span></label>
         <select id="studio" onchange="onStudioSelect()">
@@ -175,7 +172,6 @@ select{
         </select>
       </div>
 
-      <!-- 連動選單：選擇學生名字 -->
       <div class="field-block" id="name-wrap" style="display:none;">
         <label class="field-label">學生姓名 <span>/ Student Name</span></label>
         <select id="student-name">
@@ -183,7 +179,6 @@ select{
         </select>
       </div>
 
-      <!-- 非學生身分時顯示的姓名輸入框 -->
       <div class="field-block" id="visitor-name-wrap" style="display:none;">
         <label class="field-label">稱呼/姓名 <span>/ Name</span></label>
         <input type="text" id="visitor-name" placeholder="請輸入您的稱呼" style="width:100%; padding:9px 12px; border:1px solid var(--g20); border-radius:2px; font-size:13px;">
@@ -194,7 +189,6 @@ select{
     </div>
   </div>
 
-  <!-- 右側定位 Canvas -->
   <div>
     <div class="section-label">Step 1 — 點擊定位 · Click to position</div>
     <canvas id="quadCanvas" width="420" height="420"></canvas>
@@ -205,7 +199,6 @@ select{
 </div>
 </div>
 
-<!-- ══════════ DASHBOARD 頁面 ══════════ -->
 <div class="page" id="page-dashboard">
   <div class="dash-header">
     <div class="dash-title">資料儀表板 <span style="font-size:14px;color:var(--g40);font-weight:300">· Dashboard</span></div>
@@ -213,7 +206,6 @@ select{
     <div class="last-update" id="lastUpdate"></div>
   </div>
 
-  <!-- 學生的個人選單查詢欄位 -->
   <div class="card span2" style="margin-bottom: 20px;">
     <div class="card-title">Individual Search · 已繳交名單與座標快速檢視</div>
     <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
@@ -253,7 +245,6 @@ select{
       <div class="trend-box" id="trendBox">載入中 Loading...</div>
     </div>
 
-    <!-- 分析表格全部改成漂亮的圓餅圖 (Pie Charts) -->
     <div class="card">
       <div class="card-title">Age Distribution · 年齡分布 (Pie)</div>
       <div class="chart-container"><canvas id="chart-age"></canvas></div>
@@ -280,7 +271,7 @@ select{
 const SB = "https://ywuamzusgtmydgvlsxpv.supabase.co";
 const SK = "sb_publishable_C4u8NgyKacE5SrByLCQWTA_rBTkdJYr";
 
-// 117級完備分組名單
+// ── 🎯 117 級最新完備官方分組名單 ──
 const STUDIO_STUDENTS = {
   "A-王逸璇": ["徐晴薽", "張盈甄", "李亦文", "周庭旭", "簡睿均", "吳宣儀", "詹昀庭", "陳霈盈", "黃劼"],
   "B-曾雅欣": ["張佩歆", "曾秭畇", "周新媛", "温仁睻", "謝昕妤", "周鈺娟", "高芙現", "黃筠嫺", "陳羿帆"],
@@ -307,7 +298,7 @@ function onRoleSelect(el) {
   if(isStudent) {
     document.getElementById('studio-wrap').style.display = 'block';
     document.getElementById('visitor-name-wrap').style.display = 'none';
-    document.getElementById('studio').value = ""; // 重設組別
+    document.getElementById('studio').value = ""; 
     document.getElementById('name-wrap').style.display = 'none';
   } else {
     document.getElementById('studio-wrap').style.display = 'none';
@@ -349,7 +340,7 @@ function drawQ(dx,dy){
   qctx.clearRect(0,0,QS,QS);
   qctx.fillStyle='#f5f4f0';qctx.fillRect(0,0,QS,QS);
   qctx.strokeStyle='#d4d2ce';qctx.lineWidth=1;
-  qctx.beginPath();qctx.moveTo(QS/2,0);qctx.lineTo(QS/2,QS);ctx.stroke;qctx.moveTo(0,QS/2);qctx.lineTo(QS,QS/2);qctx.stroke();
+  qctx.beginPath();qctx.moveTo(QS/2,0);qctx.lineTo(QS/2,QS);qctx.moveTo(0,QS/2);qctx.lineTo(QS,QS/2);qctx.stroke();
   if(dx!==null){
     const px=(dx+5)/10*QS, py=(1-(dy+5)/10)*QS;
     qctx.fillStyle='#111110';qctx.beginPath();qctx.arc(px,py,6,0,Math.PI*2);qctx.fill();
@@ -463,13 +454,30 @@ function render(raw){
   
   const n = data.length;
   document.getElementById('k-total').textContent = n;
-  if(n===0) return;
+  
+  if(n===0) {
+    drawScatter([]);
+    document.getElementById('k-cx').textContent = '—';
+    document.getElementById('k-cy').textContent = '—';
+    document.getElementById('k-quad').textContent = '—';
+    document.getElementById('trendBox').textContent = '尚無此篩選條件下的資料點。';
+    return;
+  }
 
   const cx = data.reduce((s,d)=>s+d.x,0)/n;
   const cy = data.reduce((s,d)=>s+d.y,0)/n;
   document.getElementById('k-cx').textContent = cx.toFixed(2);
   document.getElementById('k-cy').textContent = cy.toFixed(2);
 
+  const qCounts = {};
+  data.forEach(d => { if(d.quadrant) qCounts[d.quadrant] = (qCounts[d.quadrant]||0)+1; });
+  let maxQ = '—', maxV = 0;
+  for(let q in qCounts) { if(qCounts[q] > maxV) { maxV = qCounts[q]; maxQ = q; } }
+  document.getElementById('k-quad').textContent = maxQ;
+
+  document.getElementById('trendBox').innerHTML = `目前的數據平均落在：<b>X: ${cx.toFixed(2)}, Y: ${cy.toFixed(2)}</b><br>主要設計風格傾向：<b>${maxQ}</b>`;
+
+  // 繪製點與十字虛線
   drawScatter(data);
 
   // 1. 年齡圓餅圖
@@ -492,18 +500,46 @@ function render(raw){
 function drawScatter(data){
   const dc=document.getElementById('dashCanvas');const ctx=dc.getContext('2d');const DS=440;
   ctx.clearRect(0,0,DS,DS);
+  
+  // 背景與主要軸線
   ctx.fillStyle='#f5f4f0';ctx.fillRect(0,0,DS,DS);
-  ctx.strokeStyle='#e8e6e2';
+  ctx.strokeStyle='#e8e6e2';ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(DS/2,0);ctx.lineTo(DS/2,DS);ctx.moveTo(0,DS/2);ctx.lineTo(DS,DS/2);ctx.stroke();
 
+  // 繪製所有人交上來的座標點
   data.forEach(d=>{
     const px=(d.x+5)/10*DS, py=(1-(d.y+5)/10)*DS;
-    ctx.fillStyle = d.id === highlightedId ? '#ff003c' : '#2563a8';
-    ctx.beginPath();ctx.arc(px,py,d.id === highlightedId ? 8 : 4,0,Math.PI*2);ctx.fill();
-    if(d.id === highlightedId) {
-      ctx.fillStyle='#111110';ctx.font='11px sans-serif';ctx.fillText(d.name, px+10, py+4);
+    const isHighlight = (d.id === highlightedId);
+    
+    ctx.fillStyle = isHighlight ? '#ff003c' : (d.role === '老師' ? 'var(--c-teacher)' : 'var(--c-student)');
+    ctx.beginPath();
+    ctx.arc(px, py, isHighlight ? 8 : 4.5, 0, Math.PI*2);
+    ctx.fill();
+
+    if(isHighlight) {
+      ctx.strokeStyle = '#ffffff';ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle='#111110';ctx.font='bold 11px sans-serif';
+      ctx.fillText(d.name, px+11, py+4);
     }
   });
+
+  // 計算並繪製群體平均中心點 (Centroid) 的十字虛線與方塊
+  if(data.length > 0){
+    const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
+    const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
+    const px=(cx+5)/10*DS, py=(1-(cy+5)/10)*DS;
+
+    // 畫十字虛線
+    ctx.strokeStyle='rgba(200,134,10,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,DS);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(DS,py);ctx.stroke();
+    ctx.setLineDash([]); // 恢復實線
+
+    // 畫黃色中心方塊
+    ctx.fillStyle='var(--c-centroid)';ctx.fillRect(px-5,py-5,10,10);
+    ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.strokeRect(px-5,py-5,10,10);
+  }
 }
 
 function switchTab(tab,btn){
