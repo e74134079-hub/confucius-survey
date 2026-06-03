@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confucius Temple Survey — 成大建築117級</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111110;--g80:#3d3c3a;--g60:#6b6864;--g40:#9c9894;
+  --g20:#d4d2ce;--g10:#e8e6e2;--g05:#f5f4f0;--w:#ffffff;
+  /* role colours — clean, non-clashing */
+  --c-student:#2563a8;   /* cool blue */
+  --c-teacher:#b04a1f;   /* terracotta */
+  --c-other:  #4a7a5c;   /* sage green */
+  --c-centroid:#c8860a;  /* warm amber */
+  /* quadrant tints */
+  --q1:#fff7ed;--q2:#eff6ff;--q3:#f0fdf4;--q4:#fdf4ff;
+  /* studio palette — 7 distinct but harmonious */
+  --sa:#2563a8;--sb:#b04a1f;--sc:#4a7a5c;--sd:#7c3f8f;
+  --se:#c8860a;--sf:#1e7a8a;--sg:#8a4a1e;
+  --noto:"Noto Sans TC",sans-serif;
+  --sans:"Inter",sans-serif;
+  --mono:"DM Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--w);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* ── HEADER ── */
+header{
+  padding:16px 36px;border-bottom:1px solid var(--g10);
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  background:var(--w);position:sticky;top:0;z-index:60;
+}
+.logo{font-size:13px;font-weight:500;letter-spacing:-.01em;color:var(--ink);}
+.logo span{color:var(--g40);font-weight:300;margin-left:6px;font-family:var(--mono);font-size:11px;}
+header a{
+  margin-left:auto;font-size:11px;font-family:var(--mono);
+  color:var(--g60);text-decoration:none;border:.5px solid var(--g20);
+  padding:4px 10px;border-radius:2px;
+}
+header a:hover{color:var(--ink);border-color:var(--g60);}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;border-bottom:1px solid var(--g10);
+  background:var(--w);position:sticky;top:53px;z-index:50;
+  padding:0 36px;
+}
+.tab{
+  padding:13px 0;margin-right:28px;font-size:12px;font-weight:500;
+  cursor:pointer;border:none;background:none;color:var(--g40);
+  border-bottom:2px solid transparent;letter-spacing:.02em;
+  transition:all .12s;
+}
+.tab.active{color:var(--ink);border-bottom-color:var(--ink);}
+.tab:hover:not(.active){color:var(--g60);}
+
+/* ── PAGES ── */
+.page{display:none;padding:36px 36px 72px;}
+.page.active{display:block;}
+
+/* ── SURVEY layout ── */
+.survey-wrap{display:grid;grid-template-columns:1fr 420px;gap:48px;max-width:1100px;align-items:start;}
+@media(max-width:820px){.survey-wrap{grid-template-columns:1fr;}}
+
+.section-label{
+  font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--g40);margin-bottom:8px;
+}
+.section-title{font-size:22px;font-weight:300;letter-spacing:-.02em;line-height:1.2;margin-bottom:4px;}
+.section-title-en{font-size:13px;color:var(--g60);font-weight:300;margin-bottom:18px;}
+
+/* axis description cards */
+.axis-card{
+  background:var(--g05);border-radius:3px;padding:14px 16px;
+  margin-bottom:10px;
+}
+.axis-tag{
+  display:inline-block;font-size:9px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--w);background:var(--ink);
+  padding:2px 7px;border-radius:1px;margin-bottom:8px;
+}
+.axis-name{font-size:13px;font-weight:500;margin-bottom:3px;}
+.axis-desc-zh{font-family:var(--noto);font-size:12px;color:var(--g60);line-height:1.8;margin-bottom:4px;}
+.axis-desc-en{font-size:11px;color:var(--g40);font-style:italic;line-height:1.7;}
+/* toggle descriptions */
+.desc-toggle{font-size:10px;color:var(--c-student);cursor:pointer;margin-top:6px;display:inline-block;}
+.desc-extra{display:none;margin-top:8px;padding-top:8px;border-top:.5px solid var(--g20);}
+.desc-extra.show{display:block;}
+
+/* ── QUADRANT ── */
+.quad-section{}
+.quad-label-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;
+}
+.quad-outer{position:relative;display:block;}
+#quadCanvas{
+  width:100%;aspect-ratio:1;cursor:crosshair;display:block;
+  border:1px solid var(--g10);border-radius:4px;background:var(--w);
+}
+.coord-pill{
+  margin-top:10px;padding:9px 14px;background:var(--g05);
+  border-radius:3px;font-family:var(--mono);font-size:12px;color:var(--g60);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.coord-pill span{color:var(--ink);font-weight:400;}
+.coord-pill .quad-name{
+  font-size:10px;background:var(--ink);color:var(--w);
+  padding:2px 8px;border-radius:1px;
+}
+
+/* ── FORM ── */
+.form-fields{margin-top:28px;}
+.field-block{margin-bottom:20px;}
+.field-label{
+  font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--g60);margin-bottom:7px;display:block;
+}
+.field-label span{font-size:9px;color:var(--g40);font-weight:300;letter-spacing:.03em;text-transform:none;margin-left:4px;}
+.pill-group{display:flex;flex-wrap:wrap;gap:7px;}
+.pill{
+  padding:7px 14px;border:1px solid var(--g20);border-radius:2px;
+  cursor:pointer;font-size:12px;color:var(--g60);
+  transition:all .12s;user-select:none;line-height:1;
+}
+.pill.sel{background:var(--ink);color:var(--w);border-color:var(--ink);}
+.pill:hover:not(.sel){border-color:var(--g60);color:var(--ink);}
+select{
+  width:100%;padding:9px 12px;border:1px solid var(--g20);border-radius:2px;
+  font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--w);
+  appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c9894' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;
+}
+select:focus{outline:none;border-color:var(--ink);}
+
+/* ── SUBMIT BUTTON ── */
+.submit-btn{
+  width:100%;padding:13px;background:var(--ink);color:var(--w);border:none;
+  border-radius:3px;font-family:var(--sans);font-size:12px;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:opacity .12s;
+  margin-top:8px;
+}
+.submit-btn:hover{opacity:.85;}
+.submit-btn:disabled{opacity:.3;cursor:default;}
+.status-msg{margin-top:10px;font-size:12px;font-family:var(--mono);}
+.s-ok{color:var(--c-other);}.s-err{color:var(--c-teacher);}
+
+/* ── DASHBOARD ── */
+.dash-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;max-width:1200px;}
+.dash-title{font-size:22px;font-weight:300;letter-spacing:-.02em;}
+.refresh-btn{
+  padding:6px 12px;border:1px solid var(--g20);border-radius:2px;
+  font-family:var(--mono);font-size:11px;color:var(--g60);background:none;cursor:pointer;
+}
+.refresh-btn:hover{color:var(--ink);border-color:var(--g60);}
+.last-update{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--g40);}
+
+/* ── KPIS ── */
+.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;max-width:1200px;}
+.kpi{
+  background:var(--w);border:1px solid var(--g10);border-radius:3px;
+  padding:16px 20px;flex:1;min-width:110px;
+}
+.kpi-num{font-size:28px;font-weight:300;letter-spacing:-.03em;line-height:1;}
+.kpi-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--g40);margin-top:5px;}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;align-items:center;}
+.filter-label{font-size:10px;color:var(--g40);letter-spacing:.06em;margin-right:4px;}
+.f-btn{
+  padding:5px 12px;border:1px solid var(--g20);border-radius:2px;
+  font-size:11px;cursor:pointer;color:var(--g60);background:none;transition:all .12s;
+}
+.f-btn.active{background:var(--ink);color:var(--w);border-color:var(--ink);}
+.f-btn:hover:not(.active){border-color:var(--g60);color:var(--ink);}
+/* coloured role filters */
+.f-btn[data-role="學生"].active{background:var(--c-student);border-color:var(--c-student);}
+.f-btn[data-role="老師"].active{background:var(--c-teacher);border-color:var(--c-teacher);}
+.f-btn[data-role="其他"].active{background:var(--c-other);border-color:var(--c-other);}
+
+/* ── DASH GRID ── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1200px;}
+@media(max-width:740px){.dash-grid{grid-template-columns:1fr;}}
+.card{background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:20px 22px;}
+.card.span2{grid-column:span 2;}
+@media(max-width:740px){.card.span2{grid-column:span 1;}}
+.card-title{
+  font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--g40);margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.card-title::after{content:'';flex:1;height:1px;background:var(--g10);}
+.card-sub{font-size:10px;color:var(--g40);margin-bottom:10px;font-style:italic;}
+
+/* ── BAR CHART ── */
+.bar-row{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--g05);}
+.bar-row:last-child{border:none;}
+.bar-key{font-size:11px;color:var(--g60);width:82px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;height:4px;background:var(--g05);border-radius:2px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.bar-val{font-family:var(--mono);font-size:10px;color:var(--g40);width:22px;text-align:right;}
+
+/* ── TREND BOX ── */
+.trend-box{
+  background:var(--g05);border-radius:3px;padding:14px 16px;
+  font-size:11px;color:var(--g60);line-height:1.9;margin-top:14px;
+  font-family:var(--mono);
+}
+.trend-box strong{color:var(--ink);font-family:var(--sans);font-weight:500;}
+
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--g60);}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.leg-sq{width:9px;height:9px;border-radius:1px;flex-shrink:0;}
+
+/* ── SCATTER CANVAS ── */
+#dashCanvas{
+  width:100%;aspect-ratio:1;display:block;
+  border:1px solid var(--g10);border-radius:3px;background:var(--w);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">孔廟設計座標<span>NCKU Arch 117 · Studio IV · 2026</span></div>
+  <a href="https://e74134079-hub.github.io/confucius-temple-analysis/" target="_blank">← Programme Analysis</a>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('survey',this)">
+    定位調查 <span style="color:var(--g40);font-weight:300"> / Survey</span>
+  </button>
+  <button class="tab" onclick="switchTab('dashboard',this)">
+    資料儀表板 <span style="color:var(--g40);font-weight:300"> / Dashboard</span>
+  </button>
+</div>
+
+<!-- ══════════ SURVEY ══════════ -->
+<div class="page active" id="page-survey">
+<div class="survey-wrap">
+
+  <!-- LEFT: axis description + form -->
+  <div>
+    <div class="section-label">Survey · 問卷調查</div>
+    <div class="section-title">用兩條軸線，講述你對孔廟的態度</div>
+    <div class="section-title-en">Position yourself on two axes to express your attitude toward the Confucius Temple</div>
+
+    <!-- X AXIS CARD -->
+    <div class="axis-card">
+      <div class="axis-tag">X 軸 · X-Axis</div>
+      <div class="axis-name">理性 Rationality ←→ 感性 Sensibility</div>
+      <div class="axis-desc-zh">您如何看待孔廟的文化意義？偏向理性分析，還是感性直覺？</div>
+      <div class="axis-desc-en">How do you relate to the cultural significance of the Confucius Temple — through rational analysis or sensory intuition?</div>
+      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明 / For architecture students</div>
+      <div class="desc-extra">
+        <div class="axis-desc-zh">設計的論述、手法與議題 — 您的設計策略偏向邏輯推演（系統性、結構性）還是感知體驗（氛圍、材料、身體感）？</div>
+        <div class="axis-desc-en">Your design discourse, approach, and agenda — is your strategy driven by logical reasoning (systematic, structural) or sensory experience (atmosphere, materiality, bodily perception)?</div>
+      </div>
+    </div>
+
+    <!-- Y AXIS CARD -->
+    <div class="axis-card">
+      <div class="axis-tag">Y 軸 · Y-Axis</div>
+      <div class="axis-name">批判性 Criticality ←→ 包容性 Inclusivity</div>
+      <div class="axis-desc-zh">您對孔廟現有狀態的態度？傾向質疑與轉化，還是接納與延續？</div>
+      <div class="axis-desc-en">What is your attitude toward the existing state of the Confucius Temple — questioning and transforming, or accepting and continuing?</div>
+      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明 / For architecture students</div>
+      <div class="desc-extra">
+        <div class="axis-desc-zh">對於整個土地的現有狀態，您是否有觸及與更動現有建物？或者您的動作與手法傾向於整合現況、保留原有結構？</div>
+        <div class="axis-desc-en">Does your intervention touch and alter existing structures, or does your approach tend to integrate and preserve the current condition?</div>
+      </div>
+    </div>
+
+    <!-- FORM FIELDS -->
+    <div class="form-fields">
+      <div class="section-label" style="margin-bottom:16px;">基本資料 · Respondent Info</div>
+
+      <div class="field-block">
+        <label class="field-label">年齡區段 <span>/ Age Range</span></label>
+        <div class="pill-group" id="grp-age">
+          <div class="pill" onclick="pick(this,'age')">18歲以下</div>
+          <div class="pill" onclick="pick(this,'age')">18–25</div>
+          <div class="pill" onclick="pick(this,'age')">26–35</div>
+          <div class="pill" onclick="pick(this,'age')">36–50</div>
+          <div class="pill" onclick="pick(this,'age')">51–65</div>
+          <div class="pill" onclick="pick(this,'age')">65+</div>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <label class="field-label">身份 <span>/ Role</span></label>
+        <div class="pill-group" id="grp-role">
+          <div class="pill" onclick="pick(this,'role');onRole(this)">學生 Student</div>
+          <div class="pill" onclick="pick(this,'role');onRole(this)">老師 Teacher</div>
+          <div class="pill" onclick="pick(this,'role');onRole(this)">其他 Other</div>
+        </div>
+      </div>
+
+      <div class="field-block" id="studio-wrap" style="display:none;">
+        <label class="field-label">設計課組別 <span>/ Studio Group (students only)</span></label>
+        <select id="studio">
+          <option value="">— 請選擇 / Please select —</option>
+          <option value="A-王逸璇">A — 王逸璇 老師組</option>
+          <option value="B-曾雅欣">B — 曾雅欣 老師組</option>
+          <option value="C-許家茵">C — 許家茵 老師組</option>
+          <option value="D-周佳怡">D — 周佳怡 老師組</option>
+          <option value="E-林中一">E — 林中一 老師組</option>
+          <option value="F-蘇業森">F — 蘇業森 老師組</option>
+          <option value="G-趙尉翔">G — 趙尉翔 老師組</option>
+        </select>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submit()">
+        提交座標 · Submit Position →
+      </button>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Quadrant canvas -->
+  <div>
+    <div class="quad-label-row">
+      <div class="section-label">Step 1 — 點擊定位 · Click to position</div>
+    </div>
+    <div class="quad-outer">
+      <canvas id="quadCanvas" width="420" height="420"></canvas>
+    </div>
+    <div class="coord-pill" id="coordPill">
+      <span style="color:var(--g40)">尚未選擇 · Not yet positioned</span>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--g40);line-height:1.7;font-style:italic;">
+      點擊象限上任意位置定位您的態度。<br>
+      Click anywhere on the quadrant to place your position.
+    </div>
+  </div>
+
+</div><!-- /survey-wrap -->
+</div>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="page" id="page-dashboard">
+  <div class="dash-header">
+    <div class="dash-title">資料儀表板 <span style="font-size:14px;color:var(--g40);font-weight:300">· Dashboard</span></div>
+    <button class="refresh-btn" onclick="loadDash()">↺ 重新整理 Refresh</button>
+    <div class="last-update" id="lastUpdate"></div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-num" id="k-total">—</div><div class="kpi-label">Total Responses · 總回應</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-cx">—</div><div class="kpi-label">Avg X · 平均理感軸</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-cy">—</div><div class="kpi-label">Avg Y · 平均批包軸</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-quad">—</div><div class="kpi-label">Dominant Quadrant · 主象限</div></div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <span class="filter-label">篩選 Filter：</span>
+    <button class="f-btn active" onclick="setFilter('all',this)">All · 全部</button>
+    <button class="f-btn" data-role="學生" onclick="setFilter('role:學生 Student',this)">學生 Student</button>
+    <button class="f-btn" data-role="老師" onclick="setFilter('role:老師 Teacher',this)">老師 Teacher</button>
+    <button class="f-btn" data-role="其他" onclick="setFilter('role:其他 Other',this)">其他 Other</button>
+    <button class="f-btn" onclick="setFilter('studio:A-王逸璇',this)">A組</button>
+    <button class="f-btn" onclick="setFilter('studio:B-曾雅欣',this)">B組</button>
+    <button class="f-btn" onclick="setFilter('studio:C-許家茵',this)">C組</button>
+    <button class="f-btn" onclick="setFilter('studio:D-周佳怡',this)">D組</button>
+    <button class="f-btn" onclick="setFilter('studio:E-林中一',this)">E組</button>
+    <button class="f-btn" onclick="setFilter('studio:F-蘇業森',this)">F組</button>
+    <button class="f-btn" onclick="setFilter('studio:G-趙尉翔',this)">G組</button>
+  </div>
+
+  <!-- Grid -->
+  <div class="dash-grid">
+
+    <!-- Scatter — spans 2 rows -->
+    <div class="card" style="grid-row:span 2;">
+      <div class="card-title">Spatial Distribution · 座標分布</div>
+      <canvas id="dashCanvas" width="440" height="440"></canvas>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-student)"></div>學生 Student</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-teacher)"></div>老師 Teacher</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-other)"></div>其他 Other</div>
+        <div class="leg-item"><div class="leg-sq" style="background:var(--c-centroid)"></div>重心 Centroid</div>
+      </div>
+      <div class="trend-box" id="trendBox">載入中 Loading...</div>
+    </div>
+
+    <!-- Age -->
+    <div class="card">
+      <div class="card-title">Age Distribution · 年齡</div>
+      <div id="bars-age"></div>
+    </div>
+
+    <!-- Role -->
+    <div class="card">
+      <div class="card-title">Role Distribution · 身份</div>
+      <div id="bars-role"></div>
+    </div>
+
+    <!-- Studio -->
+    <div class="card">
+      <div class="card-title">Studio Group · 設計組別</div>
+      <div class="card-sub">Students only · 僅限學生</div>
+      <div id="bars-studio"></div>
+    </div>
+
+    <!-- Quadrant -->
+    <div class="card">
+      <div class="card-title">Quadrant Distribution · 象限</div>
+      <div id="bars-quad"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SB = "https://ywuamzusgtmydgvlsxpv.supabase.co";
+const SK = "sb_publishable_C4u8NgyKacE5SrByLCQWTA_rBTkdJYr";
+
+// studio colour map
+const STUDIO_CLR = {
+  'A-王逸璇':'#2563a8','B-曾雅欣':'#b04a1f','C-許家茵':'#4a7a5c',
+  'D-周佳怡':'#7c3f8f','E-林中一':'#c8860a','F-蘇業森':'#1e7a8a','G-趙尉翔':'#8a4a1e'
+};
+const ROLE_CLR = {'學生 Student':'#2563a8','老師 Teacher':'#b04a1f','其他 Other':'#4a7a5c'};
+const QUAD_CLR = {'感性×批判':'#2563a8','理性×批判':'#b04a1f','感性×包容':'#4a7a5c','理性×包容':'#7c3f8f'};
+
+// ── STATE ──────────────────────────────────────────────────────────
+let selX=null,selY=null,selAge=null,selRole=null;
+let allData=[],curFilter='all';
+
+// ── QUADRANT CANVAS ────────────────────────────────────────────────
+const qc=document.getElementById('quadCanvas');
+const qctx=qc.getContext('2d');
+const QS=420;
+
+function drawQ(dx,dy){
+  qctx.clearRect(0,0,QS,QS);
+  // quadrant tints
+  const tints=['#fff7ed30','#eff6ff30','#f0fdf430','#fdf4ff30'];
+  [[0,0],[1,0],[0,1],[1,1]].forEach(([a,b],i)=>{
+    qctx.fillStyle=tints[i];qctx.fillRect(a*QS/2,b*QS/2,QS/2,QS/2);
+  });
+  // subtle dot grid
+  qctx.fillStyle='#d4d2ce';
+  for(let xi=0;xi<=10;xi++) for(let yi=0;yi<=10;yi++){
+    const px=xi*QS/10, py=yi*QS/10;
+    qctx.beginPath();qctx.arc(px,py,1,0,Math.PI*2);qctx.fill();
+  }
+  // axes
+  qctx.strokeStyle='#d4d2ce';qctx.lineWidth=1;
+  qctx.beginPath();qctx.moveTo(QS/2,0);qctx.lineTo(QS/2,QS);qctx.stroke();
+  qctx.beginPath();qctx.moveTo(0,QS/2);qctx.lineTo(QS,QS/2);qctx.stroke();
+  // axis endpoint labels
+  qctx.fillStyle='#9c9894';qctx.font='10px Inter,sans-serif';
+  qctx.textAlign='center';qctx.fillText('批判 Criticality',QS/2,14);
+  qctx.fillText('包容 Inclusivity',QS/2,QS-5);
+  qctx.textAlign='left';qctx.fillText('理性',4,QS/2+4);
+  qctx.textAlign='right';qctx.fillText('感性',QS-4,QS/2+4);
+  // quadrant corner ghost labels
+  qctx.fillStyle='#e8e6e2';qctx.font='9px "DM Mono",monospace';
+  qctx.textAlign='left';qctx.fillText('理×批',6,22);
+  qctx.textAlign='right';qctx.fillText('感×批',QS-6,22);
+  qctx.textAlign='left';qctx.fillText('理×包',6,QS-8);
+  qctx.textAlign='right';qctx.fillText('感×包',QS-6,QS-8);
+  // dot
+  if(dx!==null){
+    const px=(dx+5)/10*QS, py=(1-(dy+5)/10)*QS;
+    // crosshair
+    qctx.strokeStyle='#11111015';qctx.lineWidth=.8;qctx.setLineDash([3,4]);
+    qctx.beginPath();qctx.moveTo(px,0);qctx.lineTo(px,QS);qctx.stroke();
+    qctx.beginPath();qctx.moveTo(0,py);qctx.lineTo(QS,py);qctx.stroke();
+    qctx.setLineDash([]);
+    // outer ring
+    qctx.strokeStyle='#11111020';qctx.lineWidth=8;
+    qctx.beginPath();qctx.arc(px,py,14,0,Math.PI*2);qctx.stroke();
+    // dot
+    qctx.fillStyle='#111110';
+    qctx.beginPath();qctx.arc(px,py,7,0,Math.PI*2);qctx.fill();
+    qctx.fillStyle='#ffffff';
+    qctx.beginPath();qctx.arc(px,py,2.5,0,Math.PI*2);qctx.fill();
+  }
+}
+drawQ(null,null);
+
+qc.addEventListener('click',e=>{
+  const r=qc.getBoundingClientRect();
+  const s=QS/r.width;
+  const px=(e.clientX-r.left)*s, py=(e.clientY-r.top)*s;
+  selX=parseFloat(((px/QS)*10-5).toFixed(2));
+  selY=parseFloat(((1-py/QS)*10-5).toFixed(2));
+  drawQ(selX,selY);
+  const qname=(selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容');
+  document.getElementById('coordPill').innerHTML=
+    `X = <span>${selX}</span> &nbsp; Y = <span>${selY}</span> `+
+    `<span class="quad-name">${qname}</span>`;
+});
+
+// ── RADIO ──────────────────────────────────────────────────────────
+function pick(el,grp){
+  document.querySelectorAll(`#grp-${grp} .pill`).forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  if(grp==='age') selAge=el.textContent;
+  if(grp==='role') selRole=el.textContent;
+}
+function onRole(el){
+  document.getElementById('studio-wrap').style.display=
+    el.textContent.includes('學生')?'block':'none';
+}
+function toggleDesc(el){
+  const extra=el.nextElementSibling;
+  const open=extra.classList.toggle('show');
+  el.textContent=open?'－ 收起 / Collapse':'＋ 建築學生說明 / For architecture students';
+}
+
+// ── SUBMIT ─────────────────────────────────────────────────────────
+async function submit(){
+  if(selX===null){setStatus('請先定位座標 · Please position on quadrant first','err');return;}
+  if(!selAge){setStatus('請選擇年齡 · Please select age range','err');return;}
+  if(!selRole){setStatus('請選擇身份 · Please select role','err');return;}
+  const rawRole = selRole.split(' ')[0]; // "學生 Student" → "學生"
+  const studio=rawRole==='學生'?document.getElementById('studio').value:null;
+  if(rawRole==='學生'&&!studio){setStatus('請選擇組別 · Please select studio group','err');return;}
+
+  document.getElementById('submitBtn').disabled=true;
+  setStatus('提交中 Submitting...','');
+
+  const row={
+    x:selX, y:selY,
+    age:selAge,
+    role:selRole,
+    studio:studio||null,
+    quadrant:(selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容')
+  };
+
+  try{
+    const r=await fetch(`${SB}/rest/v1/responses`,{
+      method:'POST',
+      headers:{
+        'apikey':SK,'Authorization':'Bearer '+SK,
+        'Content-Type':'application/json','Prefer':'return=minimal'
+      },
+      body:JSON.stringify(row)
+    });
+    if(r.ok||r.status===201){
+      setStatus('✓ 提交成功 Submitted — 感謝您的參與 Thank you!','ok');
+      selX=null;selY=null;selAge=null;selRole=null;
+      drawQ(null,null);
+      document.getElementById('coordPill').innerHTML='<span style="color:var(--g40)">尚未選擇 · Not yet positioned</span>';
+      document.querySelectorAll('.pill').forEach(b=>b.classList.remove('sel'));
+      document.getElementById('studio-wrap').style.display='none';
+      document.getElementById('studio').value='';
+    } else {
+      const e=await r.text();
+      setStatus('Error '+r.status+': '+e.slice(0,100),'err');
+    }
+  }catch(e){setStatus('Network error: '+e.message,'err');}
+  document.getElementById('submitBtn').disabled=false;
+}
+function setStatus(m,t){
+  const el=document.getElementById('statusMsg');
+  el.textContent=m;el.className='status-msg'+(t?' s-'+t:'');
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────
+async function loadDash(){
+  try{
+    const r=await fetch(`${SB}/rest/v1/responses?select=*&order=created_at.desc&limit=5000`,{
+      headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+    });
+    allData=await r.json();
+    if(!Array.isArray(allData)) allData=[];
+  }catch(e){allData=[];}
+  document.getElementById('lastUpdate').textContent=
+    new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+  render(allData);
+}
+
+function setFilter(f,btn){
+  curFilter=f;
+  document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render(allData);
+}
+function filtered(data){
+  if(curFilter==='all') return data;
+  const[k,v]=curFilter.split(':');
+  return data.filter(d=>d[k]===v);
+}
+
+function render(raw){
+  const data=filtered(raw);
+  const n=data.length;
+  document.getElementById('k-total').textContent=n;
+  if(n===0){
+    ['k-cx','k-cy','k-quad'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('trendBox').textContent='尚無資料 No data yet';
+    drawScatter([]);
+    ['age','role','studio','quad'].forEach(k=>document.getElementById('bars-'+k).innerHTML='');
+    return;
+  }
+  const cx=data.reduce((s,d)=>s+d.x,0)/n;
+  const cy=data.reduce((s,d)=>s+d.y,0)/n;
+  document.getElementById('k-cx').textContent=(cx>=0?'+':'')+cx.toFixed(2);
+  document.getElementById('k-cy').textContent=(cy>=0?'+':'')+cy.toFixed(2);
+  const qmap={};data.forEach(d=>{const q=d.quadrant||'?';qmap[q]=(qmap[q]||0)+1;});
+  const mq=Object.entries(qmap).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('k-quad').textContent=mq?mq[0]:'—';
+
+  drawScatter(data);
+
+  // bars
+  renderBars('bars-age',data,'age',
+    ['18歲以下','18–25','26–35','36–50','51–65','65+'],null);
+  renderBars('bars-role',data,'role',
+    ['學生 Student','老師 Teacher','其他 Other'],ROLE_CLR);
+  renderBars('bars-studio',data.filter(d=>d.role&&d.role.includes('學生')),'studio',
+    ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],STUDIO_CLR);
+  renderBars('bars-quad',data,'quadrant',
+    ['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_CLR);
+
+  // trend
+  const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/n).toFixed(2);
+  const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/n).toFixed(2);
+  document.getElementById('trendBox').innerHTML=
+    `<strong>Trend Analysis · 趨勢（n=${n}）</strong><br>`+
+    `Centroid 重心：(${cx.toFixed(2)}, ${cy.toFixed(2)})<br>`+
+    `X dispersion ±${sx} — ${parseFloat(sx)<1.5?'concentrated 集中':'dispersed 分散'}<br>`+
+    `Y dispersion ±${sy} — ${parseFloat(sy)<1.5?'concentrated 集中':'dispersed 分散'}<br>`+
+    `Tendency 傾向：${cx>=0?'Sensibility 感性':'Rationality 理性'} · `+
+    `${cy>=0?'Criticality 批判':'Inclusivity 包容'}<br>`+
+    `ETI effect：${etiEffect(cx,cy)}`;
+}
+
+function etiEffect(cx,cy){
+  const p=[];
+  if(cx>1.5) p.push('O(openness)↑');
+  else if(cx<-1.5) p.push('D(density)↑');
+  if(cy>1.5) p.push('H(historical permeability)↓ inhibited');
+  else if(cy<-1.5) p.push('S(social integration)↓ inhibited');
+  if(cx>0&&cy>0) p.push('V(visual complexity)↑');
+  if(cx<0&&cy>0) p.push('F(functional stability)↑');
+  if(cx>0&&cy<0) p.push('U(user agency)↑');
+  if(cx<0&&cy<0) p.push('D(functional density)↑');
+  return p.length?p.join(', '):'neutral · 中性';
+}
+
+function renderBars(id,data,key,cats,clrMap){
+  const n=data.length||1;
+  const cnt={};cats.forEach(c=>cnt[c]=0);
+  data.forEach(d=>{
+    if(!d[key]) return;
+    // role stored as "學生 Student" — match
+    const matched = cats.find(c=>d[key]===c||d[key].startsWith(c.split(' ')[0]));
+    if(matched) cnt[matched]++;
+  });
+  document.getElementById(id).innerHTML=cats.map(c=>{
+    const v=cnt[c]||0;
+    const pct=Math.round(v/n*100);
+    const clr=clrMap?clrMap[c]||'#4c4948':'#4c4948';
+    const lbl=c.length>10?c.slice(0,9)+'…':c;
+    return `<div class="bar-row">
+      <div class="bar-key">${lbl}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${clr}"></div></div>
+      <div class="bar-val">${v}</div>
+    </div>`;
+  }).join('');
+}
+
+function drawScatter(data){
+  const dc=document.getElementById('dashCanvas');
+  const ctx=dc.getContext('2d');
+  const DS=440;
+  ctx.clearRect(0,0,DS,DS);
+  // tints
+  const tints=['#fff7ed25','#eff6ff25','#f0fdf425','#fdf4ff25'];
+  [[0,0],[1,0],[0,1],[1,1]].forEach(([a,b],i)=>{
+    ctx.fillStyle=tints[i];ctx.fillRect(a*DS/2,b*DS/2,DS/2,DS/2);
+  });
+  // dot grid
+  ctx.fillStyle='#e8e6e2';
+  for(let xi=0;xi<=10;xi++) for(let yi=0;yi<=10;yi++){
+    ctx.beginPath();ctx.arc(xi*DS/10,yi*DS/10,1,0,Math.PI*2);ctx.fill();
+  }
+  // axes
+  ctx.strokeStyle='#d4d2ce';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(DS/2,0);ctx.lineTo(DS/2,DS);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,DS/2);ctx.lineTo(DS,DS/2);ctx.stroke();
+  // labels
+  ctx.fillStyle='#9c9894';ctx.font='10px Inter,sans-serif';
+  ctx.textAlign='center';ctx.fillText('批判 Criticality',DS/2,13);
+  ctx.fillText('包容 Inclusivity',DS/2,DS-4);
+  ctx.textAlign='left';ctx.fillText('理性',3,DS/2+4);
+  ctx.textAlign='right';ctx.fillText('感性',DS-3,DS/2+4);
+
+  const getClr = d => {
+    if(d.role&&d.role.includes('學生')) return '#2563a8';
+    if(d.role&&d.role.includes('老師')) return '#b04a1f';
+    return '#4a7a5c';
+  };
+
+  // dots
+  data.forEach(d=>{
+    const px=(d.x+5)/10*DS, py=(1-(d.y+5)/10)*DS;
+    ctx.fillStyle=getClr(d);
+    ctx.globalAlpha=.45;
+    ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+  });
+
+  // centroid + std dev ellipse
+  if(data.length>0){
+    const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
+    const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
+    const px=(cx+5)/10*DS, py=(1-(cy+5)/10)*DS;
+    if(data.length>2){
+      const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/data.length);
+      const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/data.length);
+      ctx.strokeStyle='#c8860a30';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.ellipse(px,py,sx/10*DS,sy/10*DS,0,0,Math.PI*2);ctx.stroke();
+    }
+    // crosshair
+    ctx.strokeStyle='#c8860a50';ctx.lineWidth=.8;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,DS);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(DS,py);ctx.stroke();
+    ctx.setLineDash([]);
+    // square centroid marker
+    ctx.fillStyle='#c8860a';
+    ctx.fillRect(px-5,py-5,10,10);
+    ctx.fillStyle='#ffffff';
+    ctx.fillRect(px-2,py-2,4,4);
+  }
+}
+drawScatter([]);
+
+// ── TAB ────────────────────────────────────────────────────────────
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('page-'+tab).classList.add('active');
+  if(tab==='dashboard') loadDash();
+}
+
+// auto-refresh every 30s
+setInterval(()=>{
+  if(document.getElementById('page-dashboard').classList.contains('active')) loadDash();
+},30000);
+</script>
+</body>
+</html>

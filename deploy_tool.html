@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deploy · Confucius Temple</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap');
+:root{
+  --acumin:"Acumin Variable Concept","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:'DM Mono',monospace;
+  --ink:#1a1916;--g85:#4c4948;--g60:#6b6864;--g40:#9c9894;
+  --g20:#d4d2ce;--g10:#e8e6e2;--g05:#f5f4f0;--w:#ffffff;
+  --green:#2d6a40;--green-l:#e4f2c4;
+  --blue:#1a5a8a;--blue-l:#d0e8f8;
+  --red:#c42b2b;--red-l:#fde8e8;
+  --amber:#7a5500;--amber-l:#fdecc8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:var(--acumin);background:var(--g05);color:var(--ink);
+  min-height:100vh;display:flex;align-items:flex-start;
+  justify-content:center;padding:48px 20px;
+}
+.card{
+  background:var(--w);border:.5px solid var(--g20);border-radius:3px;
+  padding:40px 44px;width:100%;max-width:560px;
+}
+h1{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px;}
+.sub{font-size:12px;color:var(--g60);font-family:var(--mono);margin-bottom:32px;}
+.url-pill{
+  background:var(--blue-l);border:.5px solid #5090c0;border-radius:2px;
+  padding:9px 13px;font-family:var(--mono);font-size:12px;color:var(--blue);
+  margin-bottom:32px;display:flex;align-items:center;gap:8px;
+}
+.url-pill a{color:var(--blue);text-decoration:none;font-weight:500;}
+.url-pill a:hover{text-decoration:underline;}
+
+label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--g60);display:block;margin-bottom:6px;margin-top:16px;}
+label:first-of-type{margin-top:0;}
+input[type=text],input[type=password]{
+  width:100%;padding:10px 12px;
+  border:.5px solid var(--g20);border-radius:2px;
+  font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--w);
+}
+input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(--ink);}
+.hint{font-size:11px;color:var(--g40);font-family:var(--mono);margin-top:5px;line-height:1.6;}
+
+/* File drop zone */
+.drop-zone{
+  margin-top:6px;
+  border:1px dashed var(--g20);border-radius:2px;
+  padding:20px;text-align:center;cursor:pointer;
+  transition:all .15s;background:var(--g05);
+  position:relative;
+}
+.drop-zone:hover,.drop-zone.over{border-color:var(--ink);background:#f0ede8;}
+.drop-zone input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+}
+.drop-label{font-size:13px;color:var(--g60);line-height:1.7;pointer-events:none;}
+.drop-label b{color:var(--ink);}
+.drop-label .file-name{
+  display:none;font-family:var(--mono);font-size:12px;
+  color:var(--green);margin-top:4px;
+}
+.drop-label .file-name.show{display:block;}
+
+.divider{border:none;border-top:.5px solid var(--g10);margin:28px 0;}
+
+button.push-btn{
+  width:100%;background:var(--ink);color:var(--w);border:none;
+  padding:13px;font-family:var(--acumin);font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;
+  border-radius:2px;cursor:pointer;margin-top:8px;
+  transition:opacity .12s;
+}
+button.push-btn:hover{opacity:.82;}
+button.push-btn:disabled{opacity:.35;cursor:default;}
+
+.log{
+  background:var(--g05);border:.5px solid var(--g10);border-radius:2px;
+  padding:12px 14px;font-family:var(--mono);font-size:12px;
+  color:var(--g60);line-height:1.85;min-height:52px;
+  margin-top:14px;white-space:pre-wrap;word-break:break-all;
+}
+.ok{color:var(--green);}
+.err{color:var(--red);}
+
+.result-box{
+  background:var(--green-l);border:.5px solid var(--green);
+  border-radius:2px;padding:14px 16px;margin-top:12px;display:none;
+}
+.result-box .rl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+               color:var(--green);margin-bottom:5px;}
+.result-box a{font-family:var(--mono);font-size:13px;color:var(--green);font-weight:500;}
+
+.callout{
+  border-radius:2px;padding:12px 14px;margin-bottom:0;
+  font-size:13px;line-height:1.75;border:.5px solid;
+}
+.callout-blue{background:var(--blue-l);border-color:#5090c0;color:var(--blue);}
+.callout b{font-weight:600;}
+
+.history-link{
+  font-size:12px;color:var(--blue);font-family:var(--mono);
+  display:block;margin-top:12px;
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Confucius Temple — Deploy Tool</h1>
+  <div class="sub">Push updates to GitHub Pages · works with any version of the dashboard</div>
+
+  <div class="url-pill">
+    🔗 <a href="https://e74134079-hub.github.io/confucius-temple-analysis/" target="_blank">
+      e74134079-hub.github.io/confucius-temple-analysis/
+    </a>
+  </div>
+
+  <!-- STEP 1: File -->
+  <label>Step 1 — Select the updated programme_analysis.html</label>
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".html" onchange="onFileSelect(this)">
+    <div class="drop-label">
+      <b>Click to choose file</b> or drag and drop here<br>
+      <span style="font-size:12px;color:var(--g40)">programme_analysis.html — any version Claude generates</span>
+      <div class="file-name" id="fileName"></div>
+    </div>
+  </div>
+  <div class="hint">Every time Claude updates the dashboard, just select the new file here. No need to regenerate this deploy tool.</div>
+
+  <div class="divider"></div>
+
+  <!-- STEP 2: Credentials -->
+  <label>Step 2 — GitHub Username</label>
+  <input type="text" id="user" value="e74134079-hub">
+
+  <label>Personal Access Token</label>
+  <input type="password" id="token" placeholder="ghp_...">
+  <div class="hint">Token is used only here in your browser — never stored or transmitted elsewhere.</div>
+
+  <label>Repository Name</label>
+  <input type="text" id="repo" value="confucius-temple-analysis">
+
+  <label>Commit message — describe what changed</label>
+  <input type="text" id="msg" placeholder="e.g. Add LCI landscape analysis · update radial diagram">
+  <div class="hint">This becomes the version label in your history</div>
+
+  <div class="divider"></div>
+
+  <!-- STEP 3: Push -->
+  <div class="callout callout-blue">
+    <b>Workflow:</b> Claude updates <code>programme_analysis.html</code> →
+    select it above → write a commit message → click Push Update →
+    site refreshes in ~30 seconds. This deploy tool never needs to change.
+  </div>
+
+  <button class="push-btn" id="pushBtn" onclick="push()">PUSH UPDATE →</button>
+
+  <div class="log" id="log">Select a file and fill in your token to begin.</div>
+  <div class="result-box" id="resultBox">
+    <div class="rl">Updated · live in ~30 seconds</div>
+    <a href="https://e74134079-hub.github.io/confucius-temple-analysis/" target="_blank">
+      https://e74134079-hub.github.io/confucius-temple-analysis/
+    </a>
+    <a class="history-link" id="histLink"
+       href="https://github.com/e74134079-hub/confucius-temple-analysis/commits/main"
+       target="_blank">
+      View version history on GitHub →
+    </a>
+  </div>
+</div>
+
+<script>
+let fileContent = null;   // base64 string of selected file
+let fileSize = 0;
+
+// ── FILE SELECTION ──
+function onFileSelect(input){
+  const file = input.files[0];
+  if(!file) return;
+  fileSize = file.size;
+  const fn = document.getElementById('fileName');
+  fn.textContent = file.name + ' (' + (file.size/1024/1024).toFixed(1) + ' MB)';
+  fn.classList.add('show');
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    // Convert to base64 for GitHub API
+    const bytes = new Uint8Array(e.target.result);
+    let binary = '';
+    const chunkSize = 8192;
+    for(let i = 0; i < bytes.length; i += chunkSize){
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    fileContent = btoa(binary);
+    log('✓ File loaded: ' + file.name + ' (' + (file.size/1024/1024).toFixed(1) + ' MB)', 'ok');
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Drag & drop
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()=> dz.classList.remove('over'));
+dz.addEventListener('drop', e=>{
+  e.preventDefault(); dz.classList.remove('over');
+  const file = e.dataTransfer.files[0];
+  if(file && file.name.endsWith('.html')){
+    document.getElementById('fileInput').files = e.dataTransfer.files;
+    onFileSelect(document.getElementById('fileInput'));
+  }
+});
+
+// ── LOGGING ──
+function log(msg, cls){
+  const el = document.getElementById('log');
+  if(el.textContent === 'Select a file and fill in your token to begin.') el.innerHTML = '';
+  const d = document.createElement('div');
+  if(cls) d.className = cls;
+  d.textContent = msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── GITHUB API ──
+async function gh(url, method, token, body){
+  const opts = {
+    method: method || 'GET',
+    headers: {
+      'Authorization': 'token ' + token,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    },
+  };
+  if(body) opts.body = JSON.stringify(body);
+  const r = await fetch('https://api.github.com' + url, opts);
+  let data; try{ data = await r.json(); }catch(e){ data = {}; }
+  return { status: r.status, data };
+}
+
+// ── PUSH ──
+async function push(){
+  if(!fileContent){ alert('Please select a file first'); return; }
+  const user  = document.getElementById('user').value.trim();
+  const token = document.getElementById('token').value.trim();
+  const repo  = document.getElementById('repo').value.trim();
+  const msg   = document.getElementById('msg').value.trim() || 'Update dashboard';
+  if(!user || !token){ alert('Fill in your GitHub username and token'); return; }
+
+  const btn = document.getElementById('pushBtn');
+  btn.disabled = true;
+  document.getElementById('log').innerHTML = '';
+  document.getElementById('resultBox').style.display = 'none';
+
+  try{
+    // Get current SHA
+    log('① Connecting to GitHub...');
+    const cur = await gh('/repos/'+user+'/'+repo+'/contents/index.html', 'GET', token);
+
+    if(cur.status === 404){
+      // Repo exists but file doesn't — first deploy
+      log('  ℹ No existing file found — doing first upload');
+    } else if(cur.status === 200){
+      log('  ✓ Repository found (SHA: ' + cur.data.sha.slice(0,8) + ')', 'ok');
+    } else if(cur.status === 401){
+      log('✗ Invalid token. Check your Personal Access Token.', 'err');
+      btn.disabled = false; return;
+    } else if(cur.status === 403){
+      log('✗ Access denied. Make sure to open this tool via VS Code Live Server\n  (not by double-clicking the file).', 'err');
+      btn.disabled = false; return;
+    } else {
+      log('✗ Error ' + cur.status + ': ' + JSON.stringify(cur.data.message || cur.data), 'err');
+      btn.disabled = false; return;
+    }
+
+    const sha = cur.status === 200 ? cur.data.sha : undefined;
+
+    // Upload
+    log('② Uploading dashboard (' + (fileSize/1024/1024).toFixed(1) + ' MB) — please wait...');
+    const payload = { message: msg, content: fileContent };
+    if(sha) payload.sha = sha;
+
+    const up = await gh('/repos/'+user+'/'+repo+'/contents/index.html', 'PUT', token, payload);
+
+    if(up.status === 200 || up.status === 201){
+      log('  ✓ Uploaded successfully', 'ok');
+      log('');
+      log('✅  "' + msg + '"', 'ok');
+      log('Live at: https://' + user + '.github.io/' + repo + '/ in ~30 seconds');
+      document.getElementById('resultBox').style.display = 'block';
+      document.getElementById('histLink').href =
+        'https://github.com/' + user + '/' + repo + '/commits/main';
+    } else {
+      log('✗ Upload failed: ' + JSON.stringify(up.data.message || up.data), 'err');
+    }
+  } catch(e){
+    log('✗ Network error: ' + e.message, 'err');
+    log('  → Make sure you opened this via VS Code Live Server (http://127.0.0.1:5500)', 'err');
+  }
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
