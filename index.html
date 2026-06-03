@@ -370,7 +370,15 @@ const SK="sb_publishable_C4u8NgyKacE5SrByLCQWTA_rBTkdJYr";
 // Studio keys — no letters, just teacher names
 const STUDIOS=["王逸璇","曾雅欣","許家茵","周佳怡","林中一","蘇業森","趙尉翔"];
 const STUDIO_LABELS=STUDIOS.map(s=>s+' 老師組');
-const STUDIO_CLR={"王逸璇":"#e46828","曾雅欣":"#f0be39","許家茵":"#237f5d","周佳怡":"#27958f","林中一":"#1887ab","蘇業森":"#704776","趙尉翔":"#d34467"};
+const STUDIO_CLR={
+  "王逸璇":"#e46828","A-王逸璇":"#e46828",
+  "曾雅欣":"#f0be39","B-曾雅欣":"#f0be39",
+  "許家茵":"#237f5d","C-許家茵":"#237f5d",
+  "周佳怡":"#27958f","D-周佳怡":"#27958f",
+  "林中一":"#1887ab","E-林中一":"#1887ab",
+  "蘇業森":"#704776","F-蘇業森":"#704776",
+  "趙尉翔":"#d34467","G-趙尉翔":"#d34467"
+};
 
 const QUAD_GREY=["#3d3c3a","#6b6864","#9c9894","#c4c2be"];
 const AGE_GREY=["#2a2928","#4c4948","#6b6864","#9c9894","#c4c2be","#e8e6e2"];
@@ -385,6 +393,8 @@ const STUDENT_LISTS={
   "蘇業森":["丁宥芹","傅品淳","曾柏翔","李佳穎","謝旻璇","陳儀庭","陳瑞彤","陳盈穎","朱芊樺","謝綵恩"],
   "趙尉翔":["劉凱君","林映彤","張幼蓁","張稚涵","黃郁芯","林伊璇","林虹廷","詹致寧","陳海祥"]
 };
+// Normalize studio value: strip "A-" prefix if present
+function normStudio(s){ if(!s) return null; const m=s.match(/^[A-G]-(.+)$/); return m?m[1]:s; }
 
 let selX=null,selY=null,selAge=null,selRole=null;
 let allData=[],curFilter='all',focusName='';
@@ -604,9 +614,10 @@ function render(raw){
     ['18歲以下','18–25','26–35','36–50','51–65','65+'],AGE_GREY);
   drawCatPie('rolePieCanvas','rolePieLegend',data,'role',
     ['學生','老師','其他'],ROLE_GREY);
+  const normData=data.map(d=>({...d,studioNorm:normStudio(d.studio)}));
   drawCatPie('studioPieCanvas','studioPieLegend',
-    data.filter(d=>d.role==='學生'),'studio',
-    STUDIOS,Object.values(STUDIO_CLR),STUDIO_LABELS.map(l=>l));
+    normData.filter(d=>d.role==='學生'),'studioNorm',
+    STUDIOS,Object.values(STUDIO_CLR).filter((_,i)=>i<7),STUDIO_LABELS);
   drawCatPie('quadPieCanvas','quadPieLegend',data,'quadrant',
     ['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_GREY);
 
@@ -617,7 +628,7 @@ function render(raw){
     `重心 (${cx.toFixed(2)}, ${cy.toFixed(2)})<br>`+
     `X ±${sx} — ${parseFloat(sx)<1.6?'集中':'分散'} &nbsp; Y ±${sy} — ${parseFloat(sy)<1.5?'集中':'分散'}<br>`+
     `傾向：${cx>=0?'感性':'理性'} × ${cy>=0?'批判':'包容'}`+
-    (focusName?(() => {const fd=raw.find(d=>d.name===focusName);return fd?`<br><br><span style="color:#ac1917"><strong>🎯 ${fd.name}</strong></span><br>${fd.studio||'—'} 老師組 · (${fd.x}, ${fd.y}) · ${fd.quadrant}`:''})():'');
+    (focusName?(() => {const fd=raw.find(d=>d.name===focusName);return fd?`<br><br><span style="color:#ac1917"><strong>🎯 ${fd.name}</strong></span><br>${normStudio(fd.studio)||fd.studio||'—'} 老師組 · (${fd.x}, ${fd.y}) · ${fd.quadrant}`:''})():'');
 
   renderTable(raw);
   buildMiniGrid(raw);
@@ -687,7 +698,7 @@ function drawScatter(data){
   data.forEach(d=>{
     const px=(d.x+5)/10*DS, py=(1-(d.y+5)/10)*DS;
     let clr='#c4c2be';
-    if(d.role==='學生'&&d.studio) clr=STUDIO_CLR[d.studio]||'#c4c2be';
+    if(d.role==='學生'&&d.studio) clr=STUDIO_CLR[d.studio]||STUDIO_CLR[normStudio(d.studio)]||'#c4c2be';
     ctx.fillStyle=clr; ctx.globalAlpha=.75;
     ctx.beginPath(); ctx.arc(px,py,4.5,0,Math.PI*2); ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=.7; ctx.globalAlpha=1; ctx.stroke();
@@ -764,7 +775,7 @@ function buildMiniGrid(raw){
       canvas.width=sz*dpr; canvas.height=sz*dpr;
       canvas.style.width=sz+'px'; canvas.style.height=sz+'px';
       const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
-      const d=raw.find(r=>r.name===name&&r.role==='學生');
+      const d=raw.find(r=>r.name===name&&r.role==='學生'&&normStudio(r.studio)===s);
       drawMiniCell(ctx,sz,d,STUDIO_CLR[s]);
       const nm=document.createElement('div');
       nm.className='mc-name'; nm.textContent=name;
@@ -848,7 +859,7 @@ function renderTable(raw){
   const tbody=document.getElementById('tableBody');
   let html='';
   STUDIOS.forEach(s=>{
-    const rows=raw.filter(d=>d.role==='學生'&&d.studio===s&&d.name&&!d.name.includes('_'));
+    const rows=raw.filter(d=>d.role==='學生'&&normStudio(d.studio)===s&&d.name&&!d.name.includes('_'));
     if(rows.length===0) return;
     html+=`<tr class="group-header"><td colspan="4" style="color:${STUDIO_CLR[s]}">${s} 老師組</td></tr>`;
     rows.sort((a,b)=>a.name.localeCompare(b.name,'zh-TW')).forEach(d=>{
@@ -856,7 +867,7 @@ function renderTable(raw){
       const qclr=QUAD_GREY_MAP[d.quadrant]||'#9c9894';
       html+=`<tr class="${isFocus?'focus-row':''}">
         <td><b>${d.name}</b></td>
-        <td style="color:${STUDIO_CLR[s]};font-size:11px">${s} 老師組</td>
+        <td style="color:${STUDIO_CLR[s]||STUDIO_CLR[normStudio(s)]};font-size:11px">${s} 老師組</td>
         <td style="font-family:var(--mono);font-size:11px">(${d.x}, ${d.y})</td>
         <td style="color:${qclr};font-family:var(--mono);font-size:11px">${d.quadrant||'—'}</td>
       </tr>`;
