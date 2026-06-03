@@ -285,10 +285,13 @@ table.resp-table .cell-quad{font-family:var(--mono);font-size:11px;}
       <div class="trend-box" id="trendBox">載入中 Loading...</div>
     </div>
 
-    <!-- Age -->
+    <!-- Age Pie -->
     <div class="card">
       <div class="card-title">Age Distribution · 年齡</div>
-      <div id="bars-age"></div>
+      <div class="pie-wrap">
+        <canvas id="agePieCanvas" width="140" height="140"></canvas>
+        <div class="pie-legend" id="agePieLegend"></div>
+      </div>
     </div>
 
     <!-- Role PIE -->
@@ -300,17 +303,23 @@ table.resp-table .cell-quad{font-family:var(--mono);font-size:11px;}
       </div>
     </div>
 
-    <!-- Studio -->
+    <!-- Studio Pie -->
     <div class="card">
       <div class="card-title">Studio Group · 設計組別</div>
       <div class="card-sub">Students only · 僅限學生</div>
-      <div id="bars-studio"></div>
+      <div class="pie-wrap">
+        <canvas id="studioPieCanvas" width="140" height="140"></canvas>
+        <div class="pie-legend" id="studioPieLegend"></div>
+      </div>
     </div>
 
-    <!-- Quadrant -->
+    <!-- Quadrant Pie -->
     <div class="card">
       <div class="card-title">Quadrant Distribution · 象限</div>
-      <div id="bars-quad"></div>
+      <div class="pie-wrap">
+        <canvas id="quadPieCanvas" width="140" height="140"></canvas>
+        <div class="pie-legend" id="quadPieLegend"></div>
+      </div>
     </div>
   </div>
 
@@ -600,10 +609,16 @@ function render(raw){
 
   drawScatter(data);
   drawRolePie(data);
-  renderBars('bars-age',data,'age',['18歲以下','18–25','26–35','36–50','51–65','65+'],null);
-  renderBars('bars-studio',data.filter(d=>d.role==='學生'),'studio',
-    ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],STUDIO_CLR);
-  renderBars('bars-quad',data,'quadrant',['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_CLR);
+  drawCatPie('agePieCanvas','agePieLegend',data,'age',
+    ['18歲以下','18–25','26–35','36–50','51–65','65+'],
+    ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776']);
+  drawCatPie('studioPieCanvas','studioPieLegend',
+    data.filter(d=>d.role==='學生'),'studio',
+    ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],
+    ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776','#d34467']);
+  drawCatPie('quadPieCanvas','quadPieLegend',data,'quadrant',
+    ['感性×批判','理性×批判','感性×包容','理性×包容'],
+    ['#2563a8','#b04a1f','#237f5d','#7c3f8f']);
   renderTable(data);
 
   const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/n).toFixed(2);
@@ -700,6 +715,67 @@ function drawScatter(data){
 }
 
 // ── PIE CHART ─────────────────────────────────────────────────────
+// ── GENERIC CATEGORY PIE ────────────────────────────────────────
+function drawCatPie(canvasId, legendId, data, key, cats, clrs) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const legEl = document.getElementById(legendId);
+  const W=140,H=140,CX=70,CY=70,R=60,RI=28;
+  const dpr = window.devicePixelRatio||1;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  // count
+  const counts = cats.map(()=>0);
+  data.forEach(d=>{
+    if(!d[key]) return;
+    const i = cats.findIndex(c=>d[key]===c||d[key].startsWith(c.split('-')[0]));
+    if(i>=0) counts[i]++;
+  });
+  const total = counts.reduce((s,v)=>s+v,0)||1;
+
+  // draw donut
+  let startAngle = -Math.PI/2;
+  counts.forEach((cnt,i)=>{
+    if(cnt===0) return;
+    const slice = (cnt/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(CX+RI*Math.cos(startAngle), CY+RI*Math.sin(startAngle));
+    ctx.arc(CX,CY,R,startAngle,startAngle+slice);
+    ctx.arc(CX,CY,RI,startAngle+slice,startAngle,true);
+    ctx.closePath();
+    ctx.fillStyle = clrs[i]||'#ccc';
+    ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    startAngle += slice;
+  });
+
+  // center total
+  ctx.fillStyle='#3d3c3a'; ctx.font='bold 15px Inter,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(counts.reduce((s,v)=>s+v,0), CX, CY-5);
+  ctx.fillStyle='#9c9894'; ctx.font='9px Inter,sans-serif';
+  ctx.fillText('total', CX, CY+8);
+
+  // legend — only show non-zero
+  if(legEl) {
+    const shortLabel = c => c.length > 8 ? c.slice(0,8)+'…' : c;
+    legEl.innerHTML = cats.map((c,i)=>{
+      if(counts[i]===0) return '';
+      const pct = Math.round(counts[i]/total*100);
+      return `<div class="pie-leg-item">
+        <div class="pie-leg-dot" style="background:${clrs[i]}"></div>
+        <span>${shortLabel(c)}</span>
+        <span class="pie-leg-pct">${pct}%</span>
+        <span class="pie-leg-cnt">(${counts[i]})</span>
+      </div>`;
+    }).join('');
+  }
+}
+
 function drawRolePie(data){
   const canvas=document.getElementById('rolePieCanvas');
   const legEl=document.getElementById('pieLegend');
@@ -789,6 +865,15 @@ setInterval(()=>{
 },30000);
 
 drawRolePie([]);drawScatter([]);
+drawCatPie('agePieCanvas','agePieLegend',[],
+  'age',['18歲以下','18–25','26–35','36–50','51–65','65+'],
+  ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776']);
+drawCatPie('studioPieCanvas','studioPieLegend',[],'studio',
+  ['A-王逸璇','B-曾雅欣','C-許家茵','D-周佳怡','E-林中一','F-蘇業森','G-趙尉翔'],
+  ['#e46828','#f0be39','#237f5d','#27958f','#1887ab','#704776','#d34467']);
+drawCatPie('quadPieCanvas','quadPieLegend',[],'quadrant',
+  ['感性×批判','理性×批判','感性×包容','理性×包容'],
+  ['#2563a8','#b04a1f','#237f5d','#7c3f8f']);
 </script>
 </body>
 </html>
