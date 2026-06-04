@@ -10,36 +10,36 @@
   --ink:#111110;--g80:#3d3c3a;--g60:#6b6864;--g40:#9c9894;
   --g20:#d4d2ce;--g10:#e8e6e2;--g05:#f5f4f0;--w:#ffffff;
   --c-centroid:#ac1917;
-  --sa:#e46828;--sb:#f0be39;--sc:#237f5d;--sd:#27958f;
-  --se:#1887ab;--sf:#704776;--sg:#d34467;
   --noto:"Noto Sans TC",sans-serif;--sans:"Inter",sans-serif;--mono:"DM Mono",monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--sans);background:var(--w);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
-
 header{padding:16px 36px;border-bottom:1px solid var(--g10);display:flex;align-items:center;background:var(--w);position:sticky;top:0;z-index:60;}
 .logo{font-size:13px;font-weight:500;}
 .logo span{color:var(--g40);font-weight:300;margin-left:6px;font-family:var(--mono);font-size:11px;}
-
 .tabs{display:flex;border-bottom:1px solid var(--g10);background:var(--w);position:sticky;top:53px;z-index:50;padding:0 36px;}
 .tab{padding:13px 0;margin-right:28px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--g40);border-bottom:2px solid transparent;letter-spacing:.02em;transition:all .12s;}
 .tab.active{color:var(--ink);border-bottom-color:var(--ink);}
-
 .page{display:none;padding:36px 36px 72px;}
 .page.active{display:block;}
 
-/* ── SURVEY ── */
+/* SUB-TABS inside dashboard */
+.sub-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--g10);}
+.sub-tab{padding:10px 0;margin-right:24px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--g40);border-bottom:2px solid transparent;transition:all .12s;letter-spacing:.04em;text-transform:uppercase;}
+.sub-tab.active{color:var(--ink);border-bottom-color:var(--ink);}
+.sub-page{display:none;}
+.sub-page.active{display:block;}
+
+/* SURVEY */
 .survey-wrap{display:grid;grid-template-columns:1fr 440px;gap:48px;max-width:1200px;align-items:start;}
 @media(max-width:820px){.survey-wrap{grid-template-columns:1fr;}}
 .section-label{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--g40);margin-bottom:8px;}
 .section-title{font-size:22px;font-weight:300;letter-spacing:-.02em;line-height:1.2;margin-bottom:4px;}
 .section-title-en{font-size:13px;color:var(--g60);font-weight:300;margin-bottom:24px;}
-
-.step-block{margin-bottom:28px;}
+.step-block{margin-bottom:24px;}
 .step-num{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--g40);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
 .step-num::after{content:'';flex:1;height:.5px;background:var(--g10);}
-
 .axis-card{background:var(--g05);border-radius:3px;padding:14px 16px;margin-bottom:10px;}
 .axis-tag{display:inline-block;font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--w);background:var(--ink);padding:2px 7px;border-radius:1px;margin-bottom:8px;}
 .axis-name{font-size:13px;font-weight:500;margin-bottom:3px;}
@@ -48,7 +48,6 @@ header{padding:16px 36px;border-bottom:1px solid var(--g10);display:flex;align-i
 .desc-toggle{font-size:10px;color:#1887ab;cursor:pointer;margin-top:6px;display:inline-block;}
 .desc-extra{display:none;margin-top:8px;padding-top:8px;border-top:.5px solid var(--g20);}
 .desc-extra.show{display:block;}
-
 .field-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--g60);margin-bottom:7px;display:block;}
 .field-label span{font-size:9px;color:var(--g40);font-weight:300;letter-spacing:.03em;text-transform:none;margin-left:4px;}
 .pill-group{display:flex;flex-wrap:wrap;gap:7px;}
@@ -57,105 +56,73 @@ header{padding:16px 36px;border-bottom:1px solid var(--g10);display:flex;align-i
 .pill:hover:not(.sel){border-color:var(--g60);color:var(--ink);}
 select{width:100%;padding:9px 12px;border:1px solid var(--g20);border-radius:2px;font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--w);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c9894' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;margin-bottom:10px;}
 select:focus{outline:none;border-color:var(--ink);}
-
 .quad-outer{position:relative;display:block;}
 #quadCanvas{width:100%;aspect-ratio:1;cursor:crosshair;display:block;border:1px solid var(--g10);border-radius:4px;background:var(--w);}
 .coord-pill{margin-top:10px;padding:9px 14px;background:var(--g05);border-radius:3px;font-family:var(--mono);font-size:12px;color:var(--g60);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
 .coord-pill span{color:var(--ink);}
 .quad-name{font-size:10px;background:var(--ink);color:var(--w);padding:2px 8px;border-radius:1px;}
-
 .submit-btn{width:100%;padding:13px;background:var(--ink);color:var(--w);border:none;border-radius:3px;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:opacity .12s;margin-top:8px;}
 .submit-btn:hover{opacity:.85;}
 .submit-btn:disabled{opacity:.3;cursor:default;}
 .status-msg{margin-top:10px;font-size:12px;font-family:var(--mono);}
 .s-ok{color:#4a7a5c;}.s-err{color:#b04a1f;}
 
-/* ── DASHBOARD ── */
+/* DASHBOARD */
 .dash-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;max-width:1200px;}
 .dash-title{font-size:22px;font-weight:300;letter-spacing:-.02em;}
 .refresh-btn{padding:6px 12px;border:1px solid var(--g20);border-radius:2px;font-family:var(--mono);font-size:11px;color:var(--g60);background:none;cursor:pointer;}
 .refresh-btn:hover{color:var(--ink);border-color:var(--g60);}
 .last-update{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--g40);}
 .kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;max-width:1200px;}
-.kpi{background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:16px 20px;flex:1;min-width:110px;}
-.kpi-num{font-size:28px;font-weight:300;letter-spacing:-.03em;line-height:1;}
-.kpi-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--g40);margin-top:5px;}
+.kpi{background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:16px 20px;flex:1;min-width:100px;}
+.kpi-num{font-size:26px;font-weight:300;letter-spacing:-.03em;line-height:1;}
+.kpi-label{font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--g40);margin-top:5px;}
 .filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center;}
 .filter-label{font-size:10px;color:var(--g40);letter-spacing:.06em;margin-right:4px;}
-.f-btn{padding:5px 12px;border:1px solid var(--g20);border-radius:2px;font-size:11px;cursor:pointer;color:var(--g60);background:none;transition:all .12s;}
+.f-btn{padding:5px 12px;border:1px solid var(--g20);border-radius:2px;font-size:11px;cursor:pointer;color:var(--g60);background:none;transition:all .12s;white-space:nowrap;}
 .f-btn.active{background:var(--ink);color:var(--w);border-color:var(--ink);}
 .f-btn:hover:not(.active){border-color:var(--g60);color:var(--ink);}
 .student-select-wrap{display:flex;align-items:center;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
-.student-select-wrap select{width:260px;margin-bottom:0;padding:6px 12px;font-size:12px;}
+.student-select-wrap select{width:240px;margin-bottom:0;padding:6px 12px;font-size:12px;}
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1200px;margin-bottom:24px;}
 @media(max-width:740px){.dash-grid{grid-template-columns:1fr;}}
 .card{background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:20px 22px;}
 .card-title{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--g40);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
 .card-title::after{content:'';flex:1;height:1px;background:var(--g10);}
 .card-sub{font-size:10px;color:var(--g40);margin-bottom:10px;font-style:italic;}
-
-/* PIE */
-.pie-wrap{display:flex;align-items:center;gap:24px;padding:8px 0;flex-wrap:wrap;}
-#rolePieCanvas,#studioPieCanvas,#quadPieCanvas,#agePieCanvas{flex-shrink:0;display:block;}
-.pie-legend{display:flex;flex-direction:column;gap:6px;}
+.pie-wrap{display:flex;align-items:center;gap:20px;padding:6px 0;flex-wrap:wrap;}
+.pie-legend{display:flex;flex-direction:column;gap:5px;}
 .pie-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--g60);}
 .pie-leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .pie-leg-pct{font-family:var(--mono);font-size:11px;color:var(--ink);}
 .pie-leg-cnt{font-size:10px;color:var(--g40);}
-
 .trend-box{background:var(--g05);border-radius:3px;padding:14px 16px;font-size:11px;color:var(--g60);line-height:1.9;margin-top:14px;font-family:var(--mono);}
 .trend-box strong{color:var(--ink);font-family:var(--sans);font-weight:500;}
-.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
 .leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--g60);}
 .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .leg-sq{width:9px;height:9px;border-radius:1px;flex-shrink:0;}
 #dashCanvas{width:100%;aspect-ratio:1;display:block;border:1px solid var(--g10);border-radius:3px;background:var(--w);cursor:pointer;}
-
-/* TOOLTIP */
-.dot-tooltip{
-  position:fixed;background:var(--ink);color:var(--w);
-  padding:7px 11px;border-radius:3px;font-size:11px;font-family:var(--mono);
-  pointer-events:none;z-index:999;display:none;line-height:1.6;white-space:nowrap;
-}
+.dot-tooltip{position:fixed;background:var(--ink);color:var(--w);padding:7px 11px;border-radius:3px;font-size:11px;font-family:var(--mono);pointer-events:none;z-index:999;display:none;line-height:1.6;white-space:nowrap;}
 
 /* MINI GRID */
-.mini-grid-wrap{max-width:1200px;margin-bottom:20px;}
-.mini-grid-scroll{overflow-x:auto;padding-bottom:6px;}
-.mini-grid{display:flex;gap:6px;min-width:max-content;}
+.mini-grid-wrap{max-width:1200px;}
+.mini-grid-scroll{overflow-x:auto;padding-bottom:8px;}
+.mini-grid{display:flex;gap:8px;min-width:max-content;}
 .mini-col{display:flex;flex-direction:column;gap:4px;}
-.mini-col-label{font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--g40);text-align:center;padding:0 2px;white-space:nowrap;}
-.mini-cell{
-  width:72px;height:72px;border:1px solid var(--g10);border-radius:2px;
-  background:var(--w);cursor:pointer;position:relative;flex-shrink:0;
-  transition:border-color .12s;
-}
+.mini-col-label{font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--g40);text-align:center;padding:0 2px;white-space:nowrap;margin-bottom:2px;}
+.mini-cell{width:72px;height:72px;border:1px solid var(--g10);border-radius:2px;background:var(--w);cursor:pointer;position:relative;flex-shrink:0;transition:border-color .12s;}
 .mini-cell:hover{border-color:var(--g60);}
 .mini-cell canvas{display:block;width:100%;height:100%;}
-.mini-cell .mc-name{
-  position:absolute;bottom:0;left:0;right:0;
-  font-size:7px;font-family:var(--mono);color:var(--g40);
-  text-align:center;padding:1px 2px;background:rgba(255,255,255,.85);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
+.mini-cell .mc-name{position:absolute;bottom:0;left:0;right:0;font-size:7px;font-family:var(--mono);color:var(--g40);text-align:center;padding:1px 2px;background:rgba(255,255,255,.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 /* LIGHTBOX */
-#lightbox{
-  display:none;position:fixed;inset:0;z-index:2000;
-  background:rgba(17,17,16,.6);align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
-}
+#lightbox{display:none;position:fixed;inset:0;z-index:2000;background:rgba(17,17,16,.65);align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 #lightbox.show{display:flex;}
 #lightbox canvas{border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.4);}
-#lightbox .lb-close{
-  position:absolute;top:20px;right:24px;
-  font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6);
-  cursor:pointer;padding:6px 12px;border:1px solid rgba(255,255,255,.2);border-radius:2px;
-}
-#lightbox .lb-close:hover{color:#fff;border-color:rgba(255,255,255,.5);}
-#lightbox .lb-label{
-  position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
-  font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);
-}
+#lightbox .lb-close{position:absolute;top:20px;right:24px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6);cursor:pointer;padding:6px 12px;border:1px solid rgba(255,255,255,.2);border-radius:2px;}
+#lightbox .lb-close:hover{color:#fff;}
+#lightbox .lb-label{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);white-space:nowrap;}
 
 /* TABLE */
 .table-card{max-width:1200px;background:var(--w);border:1px solid var(--g10);border-radius:3px;padding:20px 22px;}
@@ -175,8 +142,8 @@ table.resp-table tr:hover td{background:var(--g05);}
 </header>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('survey',this)">定位調查 <span style="color:var(--g40);font-weight:300">/ Survey</span></button>
-  <button class="tab" onclick="switchTab('dashboard',this)">資料儀表板 <span style="color:var(--g40);font-weight:300">/ Dashboard</span></button>
+  <button class="tab active" onclick="switchTab('survey',this)">定位調查 / Survey</button>
+  <button class="tab" onclick="switchTab('dashboard',this)">資料儀表板 / Dashboard</button>
 </div>
 
 <!-- ══ SURVEY ══ -->
@@ -209,67 +176,70 @@ table.resp-table tr:hover td{background:var(--g05);}
         <div class="pill" onclick="pick(this,'role');onRole(this)">其他 Other</div>
       </div>
 
-      <div id="studio-wrap" style="display:none;margin-top:14px;">
-        <label class="field-label">設計課組別 <span>/ Studio Group</span></label>
-        <select id="studio" onchange="onStudioChange()">
-          <option value="">— 請選擇組別 —</option>
-          <option value="王逸璇">王逸璇 老師組</option>
-          <option value="曾雅欣">曾雅欣 老師組</option>
-          <option value="許家茵">許家茵 老師組</option>
-          <option value="周佳怡">周佳怡 老師組</option>
-          <option value="林中一">林中一 老師組</option>
-          <option value="蘇業森">蘇業森 老師組</option>
-          <option value="趙尉翔">趙尉翔 老師組</option>
-        </select>
-        <div id="student-name-wrap" style="display:none;">
-          <label class="field-label">姓名 <span>/ Your Name</span></label>
-          <select id="student-name">
-            <option value="">— 請選擇姓名 —</option>
+      <!-- Student sub-fields: year → studio → name -->
+      <div id="student-fields" style="display:none;margin-top:14px;">
+        <label class="field-label" style="margin-bottom:8px;">年級 <span>/ Year</span></label>
+        <div class="pill-group" id="grp-year" style="margin-bottom:14px;">
+          <div class="pill" onclick="pickYear(this)">大一</div>
+          <div class="pill" onclick="pickYear(this)">大二</div>
+          <div class="pill" onclick="pickYear(this)">大三</div>
+          <div class="pill" onclick="pickYear(this)">大四</div>
+          <div class="pill" onclick="pickYear(this)">大五</div>
+        </div>
+
+        <div id="studio-wrap" style="display:none;">
+          <label class="field-label">設計課組別 <span>/ Studio Group</span></label>
+          <select id="studio" onchange="onStudioChange()">
+            <option value="">— 請選擇組別 —</option>
+            <option value="王逸璇">王逸璇 老師組</option>
+            <option value="曾雅欣">曾雅欣 老師組</option>
+            <option value="許家茵">許家茵 老師組</option>
+            <option value="周佳怡">周佳怡 老師組</option>
+            <option value="林中一">林中一 老師組</option>
+            <option value="蘇業森">蘇業森 老師組</option>
+            <option value="趙尉翔">趙尉翔 老師組</option>
           </select>
+          <div id="student-name-wrap" style="display:none;">
+            <label class="field-label">姓名 <span>/ Your Name</span></label>
+            <select id="student-name">
+              <option value="">— 請選擇姓名 —</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Axis descriptions -->
     <div class="axis-card">
-      <div class="axis-tag">X 軸 · X-Axis</div>
+      <div class="axis-tag">X 軸</div>
       <div class="axis-name">理性 Rationality ←→ 感性 Sensibility</div>
       <div class="axis-desc-zh">您如何看待孔廟的文化意義？偏向理性分析，還是感性直覺？</div>
       <div class="axis-desc-en">How do you relate to the cultural significance of the Confucius Temple — through rational analysis or sensory intuition?</div>
-      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明 / For architecture students</div>
+      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明</div>
       <div class="desc-extra">
-        <div class="axis-desc-zh">設計的論述、手法與議題 — 您的設計策略偏向邏輯推演（系統性、結構性）還是感知體驗（氛圍、材料、身體感）？</div>
-        <div class="axis-desc-en">Your design discourse, approach, and agenda — driven by logical reasoning or sensory experience?</div>
+        <div class="axis-desc-zh">設計的論述、手法與議題 — 邏輯推演（系統性、結構性）還是感知體驗（氛圍、材料、身體感）？</div>
       </div>
     </div>
     <div class="axis-card">
-      <div class="axis-tag">Y 軸 · Y-Axis</div>
+      <div class="axis-tag">Y 軸</div>
       <div class="axis-name">批判性 Criticality ←→ 包容性 Inclusivity</div>
       <div class="axis-desc-zh">您對孔廟現有狀態的態度？傾向質疑與轉化，還是接納與延續？</div>
-      <div class="axis-desc-en">What is your attitude toward the existing state of the Confucius Temple — questioning and transforming, or accepting and continuing?</div>
-      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明 / For architecture students</div>
+      <div class="axis-desc-en">Questioning and transforming, or accepting and continuing?</div>
+      <div class="desc-toggle" onclick="toggleDesc(this)">＋ 建築學生說明</div>
       <div class="desc-extra">
-        <div class="axis-desc-zh">對於整個土地的現有狀態，您是否有觸及與更動現有建物？或者您的動作與手法傾向於整合現況、保留原有結構？</div>
-        <div class="axis-desc-en">Does your intervention touch and alter existing structures, or does your approach tend to integrate and preserve?</div>
+        <div class="axis-desc-zh">對於整個土地的現有狀態，您是否有觸及與更動現有建物？或者傾向於整合現況、保留原有結構？</div>
       </div>
     </div>
 
-    <button class="submit-btn" id="submitBtn" onclick="submit()">提交座標 · Submit Position →</button>
+    <button class="submit-btn" id="submitBtn" onclick="submit()">提交座標 · Submit →</button>
     <div class="status-msg" id="statusMsg"></div>
   </div>
 
-  <!-- Step 3: Quadrant -->
   <div>
     <div class="step-num" style="margin-bottom:10px;">Step 3 — 點擊定位 · Click to Position</div>
-    <div class="quad-outer">
-      <canvas id="quadCanvas" width="440" height="440"></canvas>
-    </div>
-    <div class="coord-pill" id="coordPill">
-      <span style="color:var(--g40)">尚未選擇 · Not yet positioned</span>
-    </div>
-    <div style="margin-top:10px;font-size:11px;color:var(--g40);line-height:1.7;font-style:italic;">
-      點擊象限上任意位置定位您的態度。<br>Click anywhere on the quadrant to place your position.
-    </div>
+    <div class="quad-outer"><canvas id="quadCanvas" width="440" height="440"></canvas></div>
+    <div class="coord-pill" id="coordPill"><span style="color:var(--g40)">尚未選擇 · Not yet positioned</span></div>
+    <div style="margin-top:10px;font-size:11px;color:var(--g40);line-height:1.7;font-style:italic;">點擊象限上任意位置定位您的態度。<br>Click anywhere on the quadrant.</div>
   </div>
 </div>
 </div>
@@ -278,21 +248,27 @@ table.resp-table tr:hover td{background:var(--g05);}
 <div class="page" id="page-dashboard">
   <div class="dash-header">
     <div class="dash-title">資料儀表板 <span style="font-size:14px;color:var(--g40);font-weight:300">· Dashboard</span></div>
-    <button class="refresh-btn" onclick="loadDash()">↺ 重新整理</button>
+    <button class="refresh-btn" onclick="loadDash()">↺ Refresh</button>
     <div class="last-update" id="lastUpdate"></div>
   </div>
+
+  <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi"><div class="kpi-num" id="k-total">—</div><div class="kpi-label">Total Responses · 總回應</div></div>
-    <div class="kpi"><div class="kpi-num" id="k-cx">—</div><div class="kpi-label">Avg X · 理感軸</div></div>
-    <div class="kpi"><div class="kpi-num" id="k-cy">—</div><div class="kpi-label">Avg Y · 批包軸</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-total">—</div><div class="kpi-label">Total</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-student">—</div><div class="kpi-label">Students</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-cx">—</div><div class="kpi-label">Avg X</div></div>
+    <div class="kpi"><div class="kpi-num" id="k-cy">—</div><div class="kpi-label">Avg Y</div></div>
     <div class="kpi"><div class="kpi-num" id="k-quad">—</div><div class="kpi-label">Dominant Quadrant</div></div>
   </div>
+
+  <!-- Filter bar -->
   <div class="filter-bar">
     <span class="filter-label">篩選：</span>
     <button class="f-btn active" onclick="setFilter('all',this)">全部</button>
     <button class="f-btn" onclick="setFilter('role:學生',this)">學生</button>
     <button class="f-btn" onclick="setFilter('role:老師',this)">老師</button>
     <button class="f-btn" onclick="setFilter('role:其他',this)">其他</button>
+    <button class="f-btn" onclick="setFilter('year:大二',this)">大二</button>
     <button class="f-btn" onclick="setFilter('studio:王逸璇',this)">王逸璇 老師組</button>
     <button class="f-btn" onclick="setFilter('studio:曾雅欣',this)">曾雅欣 老師組</button>
     <button class="f-btn" onclick="setFilter('studio:許家茵',this)">許家茵 老師組</button>
@@ -301,6 +277,7 @@ table.resp-table tr:hover td{background:var(--g05);}
     <button class="f-btn" onclick="setFilter('studio:蘇業森',this)">蘇業森 老師組</button>
     <button class="f-btn" onclick="setFilter('studio:趙尉翔',this)">趙尉翔 老師組</button>
   </div>
+
   <div class="student-select-wrap">
     <span class="filter-label" style="color:var(--ink);font-weight:500;">個人檢視：</span>
     <select id="dashStudentSelect" onchange="onStudentSelect(this.value)">
@@ -308,55 +285,52 @@ table.resp-table tr:hover td{background:var(--g05);}
     </select>
   </div>
 
-  <div class="dash-grid">
-    <div class="card" style="grid-row:span 2;">
-      <div class="card-title">Spatial Distribution · 座標分布</div>
-      <canvas id="dashCanvas" width="440" height="440"></canvas>
-      <div class="legend" id="scatterLegend"></div>
-      <div class="trend-box" id="trendBox">載入中...</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Age · 年齡</div>
-      <div class="pie-wrap"><canvas id="agePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="agePieLegend"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Role · 身份</div>
-      <div class="pie-wrap"><canvas id="rolePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="rolePieLegend"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Studio Group · 設計組別</div>
-      <div class="pie-wrap"><canvas id="studioPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="studioPieLegend"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Quadrant · 象限</div>
-      <div class="pie-wrap"><canvas id="quadPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="quadPieLegend"></div></div>
+  <!-- Sub-tabs -->
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSubTab('charts',this)">Charts · 圖表分析</button>
+    <button class="sub-tab" onclick="switchSubTab('grid',this)">Student Positions · 學生點位</button>
+    <button class="sub-tab" onclick="switchSubTab('table',this)">Directory · 回應名單</button>
+  </div>
+
+  <!-- SUB-PAGE: Charts -->
+  <div class="sub-page active" id="sub-charts">
+    <div class="dash-grid">
+      <div class="card" style="grid-row:span 2;">
+        <div class="card-title">Spatial Distribution · 座標分布</div>
+        <canvas id="dashCanvas" width="440" height="440"></canvas>
+        <div class="legend" id="scatterLegend"></div>
+        <div class="trend-box" id="trendBox">載入中...</div>
+      </div>
+      <div class="card"><div class="card-title">Age · 年齡</div><div class="pie-wrap"><canvas id="agePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="agePieLegend"></div></div></div>
+      <div class="card"><div class="card-title">Role · 身份</div><div class="pie-wrap"><canvas id="rolePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="rolePieLegend"></div></div></div>
+      <div class="card"><div class="card-title">Year · 年級（學生）</div><div class="pie-wrap"><canvas id="yearPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="yearPieLegend"></div></div></div>
+      <div class="card"><div class="card-title">Studio · 設計組別</div><div class="pie-wrap"><canvas id="studioPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="studioPieLegend"></div></div></div>
+      <div class="card"><div class="card-title">Quadrant · 象限</div><div class="pie-wrap"><canvas id="quadPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="quadPieLegend"></div></div></div>
     </div>
   </div>
 
-  <!-- Mini student grid -->
-  <div class="mini-grid-wrap">
-    <div class="card-title" style="margin-bottom:12px;">Student Positions · 學生個人點位覽表</div>
-    <div class="mini-grid-scroll">
-      <div class="mini-grid" id="miniGrid"></div>
+  <!-- SUB-PAGE: Grid -->
+  <div class="sub-page" id="sub-grid">
+    <div class="mini-grid-wrap">
+      <div class="mini-grid-scroll"><div class="mini-grid" id="miniGrid"></div></div>
     </div>
   </div>
 
-  <!-- Table -->
-  <div class="table-card">
-    <div class="card-title">Respondent Directory · 回應名單</div>
-    <div class="table-wrapper">
-      <table class="resp-table">
-        <thead><tr><th>姓名</th><th>組別</th><th>座標 (X, Y)</th><th>象限</th></tr></thead>
-        <tbody id="tableBody"><tr><td colspan="4" style="text-align:center;color:var(--g40)">載入中...</td></tr></tbody>
-      </table>
+  <!-- SUB-PAGE: Table -->
+  <div class="sub-page" id="sub-table">
+    <div class="table-card">
+      <div class="card-title">回應名單 · Respondent Directory</div>
+      <div class="table-wrapper">
+        <table class="resp-table">
+          <thead><tr><th>姓名</th><th>年級</th><th>組別</th><th>座標 (X, Y)</th><th>象限</th></tr></thead>
+          <tbody id="tableBody"><tr><td colspan="5" style="text-align:center;color:var(--g40)">載入中...</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Tooltip -->
 <div class="dot-tooltip" id="dotTooltip"></div>
-
-<!-- Lightbox -->
 <div id="lightbox" onclick="closeLightbox()">
   <span class="lb-close">✕ 關閉</span>
   <canvas id="lbCanvas"></canvas>
@@ -367,7 +341,6 @@ table.resp-table tr:hover td{background:var(--g05);}
 const SB="https://ywuamzusgtmydgvlsxpv.supabase.co";
 const SK="sb_publishable_C4u8NgyKacE5SrByLCQWTA_rBTkdJYr";
 
-// Studio keys — no letters, just teacher names
 const STUDIOS=["王逸璇","曾雅欣","許家茵","周佳怡","林中一","蘇業森","趙尉翔"];
 const STUDIO_LABELS=STUDIOS.map(s=>s+' 老師組');
 const STUDIO_CLR={
@@ -379,10 +352,11 @@ const STUDIO_CLR={
   "蘇業森":"#704776","F-蘇業森":"#704776",
   "趙尉翔":"#d34467","G-趙尉翔":"#d34467"
 };
-
 const QUAD_GREY=["#3d3c3a","#6b6864","#9c9894","#c4c2be"];
+const QUAD_GREY_MAP={"感性×批判":"#3d3c3a","理性×批判":"#6b6864","感性×包容":"#9c9894","理性×包容":"#c4c2be"};
 const AGE_GREY=["#2a2928","#4c4948","#6b6864","#9c9894","#c4c2be","#e8e6e2"];
 const ROLE_GREY=["#4c4948","#9c9894","#d4d2ce"];
+const YEAR_GREY=["#2a2928","#4c4948","#6b6864","#9c9894","#c4c2be"];
 
 const STUDENT_LISTS={
   "王逸璇":["徐晴薽","張盈甄","李亦文","周庭旭","簡睿均","吳宣儀","詹昀庭","陳霈盈","黃劼"],
@@ -393,73 +367,70 @@ const STUDENT_LISTS={
   "蘇業森":["丁宥芹","傅品淳","曾柏翔","李佳穎","謝旻璇","陳儀庭","陳瑞彤","陳盈穎","朱芊樺","謝綵恩"],
   "趙尉翔":["劉凱君","林映彤","張幼蓁","張稚涵","黃郁芯","林伊璇","林虹廷","詹致寧","陳海祥"]
 };
-// Normalize studio value: strip "A-" prefix if present
-function normStudio(s){ if(!s) return null; const m=s.match(/^[A-G]-(.+)$/); return m?m[1]:s; }
 
-let selX=null,selY=null,selAge=null,selRole=null;
+function normStudio(s){if(!s)return null;const m=s.match(/^[A-G]-(.+)$/);return m?m[1]:s;}
+
+let selX=null,selY=null,selAge=null,selRole=null,selYear=null;
 let allData=[],curFilter='all',focusName='';
 let scatterData=[];
 
-// ── HiDPI helper ──────────────────────────────────────────────────
-function setupHiDPI(canvas, w, h){
+// ── HiDPI ─────────────────────────────────────────────────────────
+function hdpi(canvas,w,h){
   const dpr=window.devicePixelRatio||1;
-  canvas.width=w*dpr; canvas.height=h*dpr;
-  canvas.style.width=w+'px'; canvas.style.height=h+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr); return ctx;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  canvas.style.width=w+'px';canvas.style.height=h+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);return ctx;
 }
 
-// ── QUADRANT BASE ──────────────────────────────────────────────────
+// ── BASE QUAD DRAW ─────────────────────────────────────────────────
 function drawBase(ctx,S){
   ctx.clearRect(0,0,S,S);
-  ctx.fillStyle='#fff'; ctx.fillRect(0,0,S,S);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);
   ctx.fillStyle='#d4d2ce';
-  for(let i=0;i<=10;i++) for(let j=0;j<=10;j++){
-    ctx.beginPath(); ctx.arc(i*S/10,j*S/10,0.8,0,Math.PI*2); ctx.fill();
+  for(let i=0;i<=10;i++)for(let j=0;j<=10;j++){
+    ctx.beginPath();ctx.arc(i*S/10,j*S/10,.8,0,Math.PI*2);ctx.fill();
   }
-  ctx.strokeStyle='#c4c2be'; ctx.lineWidth=0.6;
-  ctx.beginPath(); ctx.moveTo(S/2,0); ctx.lineTo(S/2,S); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0,S/2); ctx.lineTo(S,S/2); ctx.stroke();
-  ctx.fillStyle='#9c9894'; ctx.font='400 10px Inter,sans-serif'; ctx.textBaseline='middle';
-  ctx.textAlign='center'; ctx.fillText('批判',S/2,12);
-  ctx.fillText('包容',S/2,S-12);
-  ctx.textAlign='left'; ctx.fillText('理性',6,S/2);
-  ctx.textAlign='right'; ctx.fillText('感性',S-6,S/2);
+  ctx.strokeStyle='#c4c2be';ctx.lineWidth=.6;
+  ctx.beginPath();ctx.moveTo(S/2,0);ctx.lineTo(S/2,S);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,S/2);ctx.lineTo(S,S/2);ctx.stroke();
+  ctx.fillStyle='#9c9894';ctx.font='400 10px Inter,sans-serif';ctx.textBaseline='middle';
+  ctx.textAlign='center';ctx.fillText('批判',S/2,12);ctx.fillText('包容',S/2,S-12);
+  ctx.textAlign='left';ctx.fillText('理性',6,S/2);
+  ctx.textAlign='right';ctx.fillText('感性',S-6,S/2);
 }
 
 // ── SURVEY CANVAS ──────────────────────────────────────────────────
 const qc=document.getElementById('quadCanvas');
 const QS=440;
-let qctx=setupHiDPI(qc,QS,QS);
+let qctx=hdpi(qc,QS,QS);
 function drawQ(dx,dy){
   drawBase(qctx,QS);
   if(dx!==null){
-    const px=(dx+5)/10*QS, py=(1-(dy+5)/10)*QS;
-    qctx.strokeStyle='rgba(17,17,16,.07)'; qctx.lineWidth=.7; qctx.setLineDash([3,4]);
-    qctx.beginPath(); qctx.moveTo(px,0); qctx.lineTo(px,QS); qctx.stroke();
-    qctx.beginPath(); qctx.moveTo(0,py); qctx.lineTo(QS,py); qctx.stroke();
+    const px=(dx+5)/10*QS,py=(1-(dy+5)/10)*QS;
+    qctx.strokeStyle='rgba(17,17,16,.07)';qctx.lineWidth=.7;qctx.setLineDash([3,4]);
+    qctx.beginPath();qctx.moveTo(px,0);qctx.lineTo(px,QS);qctx.stroke();
+    qctx.beginPath();qctx.moveTo(0,py);qctx.lineTo(QS,py);qctx.stroke();
     qctx.setLineDash([]);
-    qctx.fillStyle='#111110'; qctx.beginPath(); qctx.arc(px,py,5,0,Math.PI*2); qctx.fill();
-    qctx.fillStyle='#fff'; qctx.beginPath(); qctx.arc(px,py,2,0,Math.PI*2); qctx.fill();
+    qctx.fillStyle='#111110';qctx.beginPath();qctx.arc(px,py,5,0,Math.PI*2);qctx.fill();
+    qctx.fillStyle='#fff';qctx.beginPath();qctx.arc(px,py,2,0,Math.PI*2);qctx.fill();
   }
 }
 drawQ(null,null);
-
 qc.addEventListener('click',e=>{
   const r=qc.getBoundingClientRect(),s=QS/r.width;
-  const px=(e.clientX-r.left)*s, py=(e.clientY-r.top)*s;
+  const px=(e.clientX-r.left)*s,py=(e.clientY-r.top)*s;
   selX=parseFloat(((px/QS)*10-5).toFixed(2));
   selY=parseFloat(((1-py/QS)*10-5).toFixed(2));
   drawQ(selX,selY);
   const qn=(selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容');
   document.getElementById('coordPill').innerHTML=
-    `<span>X = <span>${selX}</span> &nbsp;·&nbsp; Y = <span>${selY}</span></span>`+
+    `<span>X = <span>${selX}</span> · Y = <span>${selY}</span></span>`+
     `<span class="quad-name">${qn}</span>`;
 });
 
 function toggleDesc(el){
-  const x=el.nextElementSibling; x.classList.toggle('show');
-  el.textContent=x.classList.contains('show')?'－ 隱藏 / Hide':'＋ 建築學生說明 / For architecture students';
+  const x=el.nextElementSibling;x.classList.toggle('show');
+  el.textContent=x.classList.contains('show')?'－ 隱藏':'＋ 建築學生說明';
 }
 function pick(el,grp){
   document.querySelectorAll(`#grp-${grp} .pill`).forEach(b=>b.classList.remove('sel'));
@@ -468,7 +439,23 @@ function pick(el,grp){
   if(grp==='role') selRole=el.textContent;
 }
 function onRole(el){
-  document.getElementById('studio-wrap').style.display=el.textContent.includes('學生')?'block':'none';
+  document.getElementById('student-fields').style.display=el.textContent.includes('學生')?'block':'none';
+  if(!el.textContent.includes('學生')){
+    selYear=null;
+    document.getElementById('studio-wrap').style.display='none';
+  }
+}
+function pickYear(el){
+  document.querySelectorAll('#grp-year .pill').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  selYear=el.textContent;
+  // Only show studio for 大二
+  const isY2=el.textContent==='大二';
+  document.getElementById('studio-wrap').style.display=isY2?'block':'none';
+  if(!isY2){
+    document.getElementById('student-name-wrap').style.display='none';
+    document.getElementById('studio').value='';
+  }
 }
 function onStudioChange(){
   const v=document.getElementById('studio').value;
@@ -487,22 +474,28 @@ async function submit(){
   if(!selAge){setStatus('請選擇年齡區段','err');return;}
   if(!selRole){setStatus('請選擇身份','err');return;}
   const rawRole=selRole.split(' ')[0];
-  let name='',studio=null;
+  let name='',studio=null,year=null;
   if(rawRole==='學生'){
-    studio=document.getElementById('studio').value;
-    if(!studio){setStatus('請選擇組別','err');return;}
-    name=document.getElementById('student-name').value;
-    if(!name){setStatus('請選擇姓名','err');return;}
-  } else name=rawRole+'_'+Date.now();
-
+    if(!selYear){setStatus('請選擇年級','err');return;}
+    year=selYear;
+    if(selYear==='大二'){
+      studio=document.getElementById('studio').value;
+      if(!studio){setStatus('請選擇組別','err');return;}
+      name=document.getElementById('student-name').value;
+      if(!name){setStatus('請選擇姓名','err');return;}
+    } else {
+      name='學生_'+selYear+'_'+Date.now();
+    }
+  } else {
+    name=rawRole+'_'+Date.now();
+  }
   document.getElementById('submitBtn').disabled=true;
   setStatus('提交中...','');
-  const row={x:selX,y:selY,age:selAge,role:rawRole,studio,name,
+  const row={x:selX,y:selY,age:selAge,role:rawRole,studio,name,year,
     quadrant:(selX>=0?'感性':'理性')+'×'+(selY>=0?'批判':'包容')};
-
   try{
     let isUpdate=false;
-    if(rawRole==='學生'){
+    if(rawRole==='學生'&&selYear==='大二'){
       const chk=await fetch(`${SB}/rest/v1/responses?name=eq.${encodeURIComponent(name)}&select=id`,
         {headers:{'apikey':SK,'Authorization':'Bearer '+SK}});
       const ex=await chk.json();
@@ -519,10 +512,11 @@ async function submit(){
         body:JSON.stringify(row)});
     }
     setStatus(isUpdate?'已更新您的定位 Updated!':'已記錄您的定位 Submitted!','ok');
-    selX=null;selY=null;selAge=null;selRole=null;
+    selX=null;selY=null;selAge=null;selRole=null;selYear=null;
     drawQ(null,null);
-    document.getElementById('coordPill').innerHTML='<span style="color:var(--g40)">尚未選擇 · Not yet positioned</span>';
+    document.getElementById('coordPill').innerHTML='<span style="color:var(--g40)">尚未選擇</span>';
     document.querySelectorAll('.pill').forEach(b=>b.classList.remove('sel'));
+    document.getElementById('student-fields').style.display='none';
     document.getElementById('studio-wrap').style.display='none';
     document.getElementById('student-name-wrap').style.display='none';
     document.getElementById('studio').value='';
@@ -552,21 +546,17 @@ function buildStudentSelect(data){
     .sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'))
     .forEach(d=>{
       const o=document.createElement('option');o.value=d.name;
-      o.textContent=d.name+(d.studio?' ('+d.studio+' 老師組)':'');
+      o.textContent=d.name+(d.studio?' ('+normStudio(d.studio)+' 老師組)':'')+(d.year?' · '+d.year:'');
       s.appendChild(o);
     });
 }
-
 function buildScatterLegend(){
   const leg=document.getElementById('scatterLegend');
-  leg.innerHTML=STUDIOS.map(s=>
-    `<div class="leg-item"><div class="leg-dot" style="background:${STUDIO_CLR[s]}"></div>${s} 老師組</div>`
-  ).join('')+
-  `<div class="leg-item"><div class="leg-dot" style="background:#c4c2be"></div>老師/其他</div>`+
-  `<div class="leg-item"><div class="leg-sq" style="background:#ac1917"></div>重心</div>`+
-  `<div class="leg-item" id="legFocus" style="display:none"><div class="leg-dot" style="background:#fff;border:2px solid #ac1917;width:11px;height:11px"></div>焦點</div>`;
+  leg.innerHTML=STUDIOS.map(s=>`<div class="leg-item"><div class="leg-dot" style="background:${STUDIO_CLR[s]}"></div>${s} 老師組</div>`).join('')+
+    `<div class="leg-item"><div class="leg-dot" style="background:#c4c2be"></div>其他</div>`+
+    `<div class="leg-item"><div class="leg-sq" style="background:#ac1917"></div>重心</div>`+
+    `<div class="leg-item" id="legFocus" style="display:none"><div class="leg-dot" style="background:#fff;border:2px solid #ac1917;width:11px;height:11px"></div>焦點</div>`;
 }
-
 function onStudentSelect(n){
   focusName=n;
   const lf=document.getElementById('legFocus');
@@ -574,10 +564,9 @@ function onStudentSelect(n){
   render(allData);
 }
 function setFilter(f,btn){
-  curFilter=f; focusName='';
+  curFilter=f;focusName='';
   document.getElementById('dashStudentSelect').value='';
-  const lf=document.getElementById('legFocus');
-  if(lf) lf.style.display='none';
+  const lf=document.getElementById('legFocus');if(lf) lf.style.display='none';
   document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   render(allData);
@@ -585,19 +574,24 @@ function setFilter(f,btn){
 function filtered(data){
   if(curFilter==='all') return data;
   const[k,v]=curFilter.split(':');
-  return data.filter(d=>d[k]===v||String(d[k]||'').includes(v));
+  return data.filter(d=>{
+    const val=String(d[k]||'');
+    if(k==='studio') return normStudio(d.studio)===v||val===v||val.includes(v);
+    return val===v||val.includes(v);
+  });
 }
 
 function render(raw){
   const data=filtered(raw);
   const n=data.length;
+  const nStu=data.filter(d=>d.role==='學生').length;
   document.getElementById('k-total').textContent=n;
+  document.getElementById('k-student').textContent=nStu;
   if(n===0){
     ['k-cx','k-cy','k-quad'].forEach(id=>document.getElementById(id).textContent='—');
     document.getElementById('trendBox').innerHTML='尚無資料';
-    drawScatter([]);
-    ['age','role','studio','quad'].forEach(k=>drawCatPie(k+'PieCanvas',k+'PieLegend',[],k,[],[],[]));
-    renderTable(raw); buildMiniGrid(raw); return;
+    drawScatter([],raw);
+    renderTable(raw);buildMiniGrid(raw);return;
   }
   const cx=data.reduce((s,d)=>s+d.x,0)/n;
   const cy=data.reduce((s,d)=>s+d.y,0)/n;
@@ -606,150 +600,189 @@ function render(raw){
   const qmap={};data.forEach(d=>{const q=d.quadrant||'?';qmap[q]=(qmap[q]||0)+1;});
   const mq=Object.entries(qmap).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById('k-quad').textContent=mq?mq[0]:'—';
-
   scatterData=data;
-  drawScatter(data);
+  drawScatter(data,raw);
 
   drawCatPie('agePieCanvas','agePieLegend',data,'age',
     ['18歲以下','18–25','26–35','36–50','51–65','65+'],AGE_GREY);
   drawCatPie('rolePieCanvas','rolePieLegend',data,'role',
     ['學生','老師','其他'],ROLE_GREY);
-  const normData=data.map(d=>({...d,studioNorm:normStudio(d.studio)}));
+  drawCatPie('yearPieCanvas','yearPieLegend',data.filter(d=>d.role==='學生'),'year',
+    ['大一','大二','大三','大四','大五'],YEAR_GREY);
+  const normData=data.map(d=>({...d,sn:normStudio(d.studio)}));
   drawCatPie('studioPieCanvas','studioPieLegend',
-    normData.filter(d=>d.role==='學生'),'studioNorm',
-    STUDIOS,Object.values(STUDIO_CLR).filter((_,i)=>i<7),STUDIO_LABELS);
+    normData.filter(d=>d.role==='學生'&&d.year==='大二'),'sn',
+    STUDIOS,STUDIOS.map(s=>STUDIO_CLR[s]),STUDIO_LABELS);
   drawCatPie('quadPieCanvas','quadPieLegend',data,'quadrant',
     ['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_GREY);
 
   const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/n).toFixed(2);
   const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/n).toFixed(2);
-  document.getElementById('trendBox').innerHTML=
-    `<strong>趨勢分析 Trend (n=${n})</strong><br>`+
+  let tb=`<strong>趨勢分析 (n=${n})</strong><br>`+
     `重心 (${cx.toFixed(2)}, ${cy.toFixed(2)})<br>`+
-    `X ±${sx} — ${parseFloat(sx)<1.6?'集中':'分散'} &nbsp; Y ±${sy} — ${parseFloat(sy)<1.5?'集中':'分散'}<br>`+
-    `傾向：${cx>=0?'感性':'理性'} × ${cy>=0?'批判':'包容'}`+
-    (focusName?(() => {const fd=raw.find(d=>d.name===focusName);return fd?`<br><br><span style="color:#ac1917"><strong>🎯 ${fd.name}</strong></span><br>${normStudio(fd.studio)||fd.studio||'—'} 老師組 · (${fd.x}, ${fd.y}) · ${fd.quadrant}`:''})():'');
-
+    `X ±${sx} ${parseFloat(sx)<1.6?'集中':'分散'} &nbsp; Y ±${sy} ${parseFloat(sy)<1.5?'集中':'分散'}<br>`+
+    `傾向：${cx>=0?'感性':'理性'} × ${cy>=0?'批判':'包容'}`;
+  // Year breakdown
+  const years=['大一','大二','大三','大四','大五'];
+  const ystus=data.filter(d=>d.role==='學生');
+  if(ystus.length>0){
+    tb+=`<br><br><strong>年級分布</strong><br>`;
+    years.forEach(y=>{
+      const yc=ystus.filter(d=>d.year===y).length;
+      if(yc>0) tb+=`${y}: ${yc} &nbsp;`;
+    });
+  }
+  if(focusName){
+    const fd=raw.find(d=>d.name===focusName);
+    if(fd) tb+=`<br><br><span style="color:#ac1917"><strong>🎯 ${fd.name}</strong></span><br>`+
+      (fd.year?fd.year+' · ':'')+
+      (normStudio(fd.studio)?normStudio(fd.studio)+' 老師組 · ':'')+
+      `(${fd.x}, ${fd.y}) · ${fd.quadrant}`;
+  }
+  document.getElementById('trendBox').innerHTML=tb;
   renderTable(raw);
   buildMiniGrid(raw);
 }
 
-// ── GENERIC PIE ────────────────────────────────────────────────────
-function drawCatPie(canvasId,legendId,data,key,cats,clrs,labels){
-  const canvas=document.getElementById(canvasId);
-  if(!canvas) return;
-  const legEl=document.getElementById(legendId);
+// ── PIE ────────────────────────────────────────────────────────────
+function drawCatPie(cid,lid,data,key,cats,clrs,labels){
+  const canvas=document.getElementById(cid);if(!canvas)return;
+  const legEl=document.getElementById(lid);
   const W=130,R=52,RI=22,CX=65,CY=65;
   const dpr=window.devicePixelRatio||1;
-  canvas.width=W*dpr; canvas.height=W*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=W+'px';
-  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  canvas.width=W*dpr;canvas.height=W*dpr;
+  canvas.style.width=W+'px';canvas.style.height=W+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,W,W);
   const counts=cats.map(()=>0);
   data.forEach(d=>{
-    if(!d[key]) return;
+    if(!d[key])return;
     const i=cats.findIndex(c=>d[key]===c||String(d[key]).startsWith(c));
-    if(i>=0) counts[i]++;
+    if(i>=0)counts[i]++;
   });
   const total=counts.reduce((s,v)=>s+v,0)||1;
   let ang=-Math.PI/2;
   counts.forEach((cnt,i)=>{
-    if(cnt===0) return;
+    if(cnt===0)return;
     const sl=(cnt/total)*Math.PI*2;
     ctx.beginPath();
     ctx.moveTo(CX+RI*Math.cos(ang),CY+RI*Math.sin(ang));
     ctx.arc(CX,CY,R,ang,ang+sl);
     ctx.arc(CX,CY,RI,ang+sl,ang,true);
     ctx.closePath();
-    ctx.fillStyle=clrs[i]||'#ccc'; ctx.fill();
-    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle=clrs[i]||'#ccc';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
     ang+=sl;
   });
-  ctx.fillStyle='#3d3c3a'; ctx.font='bold 14px Inter,sans-serif';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='#3d3c3a';ctx.font='bold 14px Inter,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText(counts.reduce((s,v)=>s+v,0),CX,CY-4);
-  ctx.fillStyle='#9c9894'; ctx.font='8px Inter,sans-serif';
+  ctx.fillStyle='#9c9894';ctx.font='8px Inter,sans-serif';
   ctx.fillText('total',CX,CY+7);
   if(legEl){
     legEl.innerHTML=cats.map((c,i)=>{
-      if(counts[i]===0) return '';
+      if(counts[i]===0)return'';
       const pct=Math.round(counts[i]/total*100);
       const lbl=labels?labels[i]:(c.length>10?c.slice(0,10)+'…':c);
-      return `<div class="pie-leg-item"><div class="pie-leg-dot" style="background:${clrs[i]}"></div><span>${lbl}</span><span class="pie-leg-pct">${pct}%</span><span class="pie-leg-cnt">(${counts[i]})</span></div>`;
+      return`<div class="pie-leg-item"><div class="pie-leg-dot" style="background:${clrs[i]}"></div><span>${lbl}</span><span class="pie-leg-pct">${pct}%</span><span class="pie-leg-cnt">(${counts[i]})</span></div>`;
     }).join('');
   }
 }
 
-// ── SCATTER ────────────────────────────────────────────────────────
-function drawScatter(data){
+// ── SCATTER — highlighted subset + grey background ──────────────
+function dotClr(d){
+  if(d.role==='學生'&&d.studio) return STUDIO_CLR[d.studio]||STUDIO_CLR[normStudio(d.studio)]||'#c4c2be';
+  return '#c4c2be';
+}
+function drawScatter(highlighted,allRaw){
   const dc=document.getElementById('dashCanvas');
-  const DS=440;
-  const ctx=setupHiDPI(dc,DS,DS);
+  const DS=440;const ctx=hdpi(dc,DS,DS);
   drawBase(ctx,DS);
+
+  const highlightedSet=new Set((highlighted||[]).map(d=>d.id||d.name));
+  const showAll=curFilter==='all';
+
+  // draw all data first as grey if filtered
+  if(!showAll&&allRaw){
+    allRaw.forEach(d=>{
+      const px=(d.x+5)/10*DS,py=(1-(d.y+5)/10)*DS;
+      ctx.fillStyle='#d4d2ce';ctx.globalAlpha=.35;
+      ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=1;
+    });
+  }
+
+  // std dev ellipse
+  const data=highlighted||[];
   if(data.length>2){
     const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
     const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
     const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/data.length);
     const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/data.length);
-    const px=(cx+5)/10*DS, py=(1-(cy+5)/10)*DS;
-    ctx.strokeStyle='rgba(172,25,23,.12)'; ctx.lineWidth=.8;
-    ctx.beginPath(); ctx.ellipse(px,py,sx/10*DS,sy/10*DS,0,0,Math.PI*2); ctx.stroke();
+    const px=(cx+5)/10*DS,py=(1-(cy+5)/10)*DS;
+    ctx.strokeStyle='rgba(172,25,23,.12)';ctx.lineWidth=.8;
+    ctx.beginPath();ctx.ellipse(px,py,sx/10*DS,sy/10*DS,0,0,Math.PI*2);ctx.stroke();
   }
+
+  // highlighted dots
   data.forEach(d=>{
-    const px=(d.x+5)/10*DS, py=(1-(d.y+5)/10)*DS;
-    let clr='#c4c2be';
-    if(d.role==='學生'&&d.studio) clr=STUDIO_CLR[d.studio]||STUDIO_CLR[normStudio(d.studio)]||'#c4c2be';
-    ctx.fillStyle=clr; ctx.globalAlpha=.75;
-    ctx.beginPath(); ctx.arc(px,py,4.5,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=.7; ctx.globalAlpha=1; ctx.stroke();
+    const px=(d.x+5)/10*DS,py=(1-(d.y+5)/10)*DS;
+    const clr=dotClr(d);
+    ctx.fillStyle=clr;ctx.globalAlpha=.8;
+    ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=.8;ctx.globalAlpha=1;ctx.stroke();
   });
+
+  // centroid
   if(data.length>0){
     const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
     const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
-    const px=(cx+5)/10*DS, py=(1-(cy+5)/10)*DS;
-    ctx.strokeStyle='rgba(172,25,23,.25)'; ctx.lineWidth=.5; ctx.setLineDash([3,4]);
-    ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,DS); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(DS,py); ctx.stroke();
+    const px=(cx+5)/10*DS,py=(1-(cy+5)/10)*DS;
+    ctx.strokeStyle='rgba(172,25,23,.25)';ctx.lineWidth=.5;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,DS);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(DS,py);ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle='#ac1917'; ctx.fillRect(px-4,py-4,8,8);
-    ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.strokeRect(px-4,py-4,8,8);
+    ctx.fillStyle='#ac1917';ctx.fillRect(px-4,py-4,8,8);
+    ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(px-4,py-4,8,8);
   }
+
+  // focus
   if(focusName){
-    const fd=allData.find(d=>d.name===focusName);
+    const fd=(allRaw||data).find(d=>d.name===focusName);
     if(fd){
-      const px=(fd.x+5)/10*DS, py=(1-(fd.y+5)/10)*DS;
-      ctx.strokeStyle='#ac1917'; ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.arc(px,py,10,0,Math.PI*2); ctx.stroke();
-      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,py,3.5,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#111110'; ctx.beginPath(); ctx.arc(px,py,1.5,0,Math.PI*2); ctx.fill();
+      const px=(fd.x+5)/10*DS,py=(1-(fd.y+5)/10)*DS;
+      ctx.strokeStyle='#ac1917';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(px,py,10,0,Math.PI*2);ctx.stroke();
+      ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#111';ctx.beginPath();ctx.arc(px,py,1.5,0,Math.PI*2);ctx.fill();
     }
   }
 }
 
-// Scatter tooltip on hover/click
+// Tooltip
 const dc=document.getElementById('dashCanvas');
 dc.addEventListener('mousemove',e=>{
-  if(!scatterData.length) return;
+  if(!scatterData.length)return;
   const r=dc.getBoundingClientRect(),DS=440;
-  const mx=(e.clientX-r.left)/r.width*DS;
-  const my=(e.clientY-r.top)/r.height*DS;
+  const mx=(e.clientX-r.left)/r.width*DS,my=(e.clientY-r.top)/r.height*DS;
   const tip=document.getElementById('dotTooltip');
-  let hit=null,minD=12;
-  scatterData.forEach(d=>{
-    const px=(d.x+5)/10*DS, py=(1-(d.y+5)/10)*DS;
+  let hit=null,minD=14;
+  // check all data including grey background
+  const pool=allData.length?allData:scatterData;
+  pool.forEach(d=>{
+    const px=(d.x+5)/10*DS,py=(1-(d.y+5)/10)*DS;
     const dist=Math.sqrt((mx-px)**2+(my-py)**2);
     if(dist<minD){minD=dist;hit=d;}
   });
   if(hit){
-    const nm=hit.name&&!hit.name.includes('_')?hit.name:(hit.role||'訪客');
-    const st=hit.studio?hit.studio+' 老師組':'';
-    tip.innerHTML=`<b>${nm}</b>${st?'<br>'+st:''}<br>(${hit.x}, ${hit.y}) · ${hit.quadrant||'—'}`;
+    const nm=hit.name&&!hit.name.includes('_')?hit.name:(hit.role||'—');
+    const yr=hit.year?hit.year+' · ':'';
+    const st=hit.studio?normStudio(hit.studio)+' 老師組':'';
+    tip.innerHTML=`<b>${nm}</b>${st?'<br>'+yr+st:yr?'<br>'+yr:''}<br>(${hit.x}, ${hit.y}) · ${hit.quadrant||'—'}`;
     tip.style.display='block';
     tip.style.left=(e.clientX+14)+'px';
     tip.style.top=(e.clientY-10)+'px';
-  } else {
-    tip.style.display='none';
-  }
+  } else tip.style.display='none';
 });
 dc.addEventListener('mouseleave',()=>document.getElementById('dotTooltip').style.display='none');
 
@@ -757,125 +790,101 @@ dc.addEventListener('mouseleave',()=>document.getElementById('dotTooltip').style
 function buildMiniGrid(raw){
   const grid=document.getElementById('miniGrid');
   grid.innerHTML='';
-  STUDIOS.forEach((s,si)=>{
-    const col=document.createElement('div');
-    col.className='mini-col';
-    const lbl=document.createElement('div');
-    lbl.className='mini-col-label';
-    lbl.style.color=STUDIO_CLR[s];
-    lbl.textContent=s+' 老師組';
+  STUDIOS.forEach(s=>{
+    const col=document.createElement('div');col.className='mini-col';
+    const lbl=document.createElement('div');lbl.className='mini-col-label';
+    lbl.style.color=STUDIO_CLR[s];lbl.textContent=s+' 老師組';
     col.appendChild(lbl);
-    const students=STUDENT_LISTS[s]||[];
-    students.forEach(name=>{
-      const cell=document.createElement('div');
-      cell.className='mini-cell';
+    (STUDENT_LISTS[s]||[]).forEach(name=>{
+      const cell=document.createElement('div');cell.className='mini-cell';
       const canvas=document.createElement('canvas');
-      const sz=72;
-      const dpr=window.devicePixelRatio||1;
-      canvas.width=sz*dpr; canvas.height=sz*dpr;
-      canvas.style.width=sz+'px'; canvas.style.height=sz+'px';
-      const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+      const sz=72,dpr=window.devicePixelRatio||1;
+      canvas.width=sz*dpr;canvas.height=sz*dpr;
+      canvas.style.width=sz+'px';canvas.style.height=sz+'px';
+      const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
       const d=raw.find(r=>r.name===name&&r.role==='學生'&&normStudio(r.studio)===s);
       drawMiniCell(ctx,sz,d,STUDIO_CLR[s]);
-      const nm=document.createElement('div');
-      nm.className='mc-name'; nm.textContent=name;
-      cell.appendChild(canvas); cell.appendChild(nm);
-      cell.onclick=()=>openLightbox(name,d,s,sz);
+      const nm=document.createElement('div');nm.className='mc-name';nm.textContent=name;
+      cell.appendChild(canvas);cell.appendChild(nm);
+      cell.onclick=()=>openLightbox(name,d,s);
       col.appendChild(cell);
     });
     grid.appendChild(col);
   });
 }
-
 function drawMiniCell(ctx,sz,d,clr){
   ctx.clearRect(0,0,sz,sz);
-  ctx.fillStyle='#fff'; ctx.fillRect(0,0,sz,sz);
-  // dot grid
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,sz,sz);
   ctx.fillStyle='#e8e6e2';
-  for(let i=0;i<=4;i++) for(let j=0;j<=4;j++){
-    ctx.beginPath(); ctx.arc(i*sz/4,j*sz/4,.6,0,Math.PI*2); ctx.fill();
-  }
-  // axes
-  ctx.strokeStyle='#d4d2ce'; ctx.lineWidth=.4;
-  ctx.beginPath(); ctx.moveTo(sz/2,0); ctx.lineTo(sz/2,sz); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0,sz/2); ctx.lineTo(sz,sz/2); ctx.stroke();
+  for(let i=0;i<=4;i++)for(let j=0;j<=4;j++){ctx.beginPath();ctx.arc(i*sz/4,j*sz/4,.6,0,Math.PI*2);ctx.fill();}
+  ctx.strokeStyle='#d4d2ce';ctx.lineWidth=.4;
+  ctx.beginPath();ctx.moveTo(sz/2,0);ctx.lineTo(sz/2,sz);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,sz/2);ctx.lineTo(sz,sz/2);ctx.stroke();
   if(d){
-    const px=(d.x+5)/10*sz, py=(1-(d.y+5)/10)*sz;
+    const px=(d.x+5)/10*sz,py=(1-(d.y+5)/10)*sz;
     ctx.fillStyle=clr||'#4c4948';
-    ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2); ctx.fill();
-    // coord label
-    ctx.fillStyle='#9c9894'; ctx.font='5px "DM Mono",monospace';
-    ctx.textAlign='center';
-    const lx=px<sz*0.7?px+14:px-14;
-    const ly=py<sz*0.6?py+9:py-5;
+    ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#9c9894';ctx.font='5px "DM Mono",monospace';ctx.textAlign='center';
+    const lx=px<sz*.7?px+13:px-13,ly=py<sz*.6?py+8:py-4;
     ctx.fillText(`${d.x},${d.y}`,lx,ly);
   }
 }
-
-function openLightbox(name,d,studio,origSz){
+function openLightbox(name,d,studio){
   const lb=document.getElementById('lightbox');
   const canvas=document.getElementById('lbCanvas');
-  const sz=320;
-  const dpr=window.devicePixelRatio||1;
-  canvas.width=sz*dpr; canvas.height=sz*dpr;
-  canvas.style.width=sz+'px'; canvas.style.height=sz+'px';
-  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
-  // draw large version
-  ctx.fillStyle='#fff'; ctx.fillRect(0,0,sz,sz);
+  const sz=300,dpr=window.devicePixelRatio||1;
+  canvas.width=sz*dpr;canvas.height=sz*dpr;
+  canvas.style.width=sz+'px';canvas.style.height=sz+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,sz,sz);
   ctx.fillStyle='#d4d2ce';
-  for(let i=0;i<=10;i++) for(let j=0;j<=10;j++){
-    ctx.beginPath(); ctx.arc(i*sz/10,j*sz/10,.8,0,Math.PI*2); ctx.fill();
-  }
-  ctx.strokeStyle='#c4c2be'; ctx.lineWidth=.6;
-  ctx.beginPath(); ctx.moveTo(sz/2,0); ctx.lineTo(sz/2,sz); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0,sz/2); ctx.lineTo(sz,sz/2); ctx.stroke();
-  ctx.fillStyle='#bbb'; ctx.font='400 11px Inter,sans-serif'; ctx.textBaseline='middle';
-  ctx.textAlign='center'; ctx.fillText('批判',sz/2,13);
-  ctx.fillText('包容',sz/2,sz-13);
-  ctx.textAlign='left'; ctx.fillText('理性',7,sz/2);
-  ctx.textAlign='right'; ctx.fillText('感性',sz-7,sz/2);
+  for(let i=0;i<=10;i++)for(let j=0;j<=10;j++){ctx.beginPath();ctx.arc(i*sz/10,j*sz/10,.8,0,Math.PI*2);ctx.fill();}
+  ctx.strokeStyle='#c4c2be';ctx.lineWidth=.6;
+  ctx.beginPath();ctx.moveTo(sz/2,0);ctx.lineTo(sz/2,sz);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,sz/2);ctx.lineTo(sz,sz/2);ctx.stroke();
+  ctx.fillStyle='#bbb';ctx.font='400 11px Inter,sans-serif';ctx.textBaseline='middle';
+  ctx.textAlign='center';ctx.fillText('批判',sz/2,13);ctx.fillText('包容',sz/2,sz-13);
+  ctx.textAlign='left';ctx.fillText('理性',7,sz/2);ctx.textAlign='right';ctx.fillText('感性',sz-7,sz/2);
   if(d){
-    const px=(d.x+5)/10*sz, py=(1-(d.y+5)/10)*sz;
+    const px=(d.x+5)/10*sz,py=(1-(d.y+5)/10)*sz;
     const clr=STUDIO_CLR[studio]||'#4c4948';
-    ctx.strokeStyle=clr+'40'; ctx.lineWidth=.6; ctx.setLineDash([2,3]);
-    ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,sz); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(sz,py); ctx.stroke();
+    ctx.strokeStyle=clr+'40';ctx.lineWidth=.6;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,sz);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(sz,py);ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle=clr;
-    ctx.beginPath(); ctx.arc(px,py,7,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,py,2.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=clr;ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);ctx.fill();
   }
-  document.getElementById('lbLabel').textContent=
-    name+' · '+(d?`(${d.x}, ${d.y}) · ${d.quadrant}`:'尚未提交');
+  document.getElementById('lbLabel').textContent=name+' · '+(d?`(${d.x}, ${d.y}) · ${d.quadrant}`:'尚未提交');
   lb.classList.add('show');
 }
 function closeLightbox(){document.getElementById('lightbox').classList.remove('show');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
 
-// ── TABLE ─────────────────────────────────────────────────────────
-const QUAD_GREY_MAP={'感性×批判':'#3d3c3a','理性×批判':'#6b6864','感性×包容':'#9c9894','理性×包容':'#c4c2be'};
-
+// ── TABLE ──────────────────────────────────────────────────────────
 function renderTable(raw){
   const tbody=document.getElementById('tableBody');
   let html='';
   STUDIOS.forEach(s=>{
     const rows=raw.filter(d=>d.role==='學生'&&normStudio(d.studio)===s&&d.name&&!d.name.includes('_'));
-    if(rows.length===0) return;
-    html+=`<tr class="group-header"><td colspan="4" style="color:${STUDIO_CLR[s]}">${s} 老師組</td></tr>`;
+    if(!rows.length)return;
+    html+=`<tr class="group-header"><td colspan="5" style="color:${STUDIO_CLR[s]}">${s} 老師組</td></tr>`;
     rows.sort((a,b)=>a.name.localeCompare(b.name,'zh-TW')).forEach(d=>{
       const isFocus=focusName&&d.name===focusName;
       const qclr=QUAD_GREY_MAP[d.quadrant]||'#9c9894';
       html+=`<tr class="${isFocus?'focus-row':''}">
         <td><b>${d.name}</b></td>
-        <td style="color:${STUDIO_CLR[s]||STUDIO_CLR[normStudio(s)]};font-size:11px">${s} 老師組</td>
+        <td style="color:var(--g60)">${d.year||'—'}</td>
+        <td style="color:${STUDIO_CLR[s]};font-size:11px">${s} 老師組</td>
         <td style="font-family:var(--mono);font-size:11px">(${d.x}, ${d.y})</td>
         <td style="color:${qclr};font-family:var(--mono);font-size:11px">${d.quadrant||'—'}</td>
       </tr>`;
     });
   });
-  tbody.innerHTML=html||'<tr><td colspan="4" style="text-align:center;color:var(--g40)">尚無學生資料</td></tr>';
+  tbody.innerHTML=html||'<tr><td colspan="5" style="text-align:center;color:var(--g40)">尚無學生資料</td></tr>';
 }
 
+// ── TAB SWITCHING ──────────────────────────────────────────────────
 function switchTab(tab,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -883,16 +892,19 @@ function switchTab(tab,btn){
   document.getElementById('page-'+tab).classList.add('active');
   if(tab==='dashboard') loadDash();
 }
+function switchSubTab(tab,btn){
+  document.querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sub-page').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sub-'+tab).classList.add('active');
+}
+
 setInterval(()=>{
   if(document.getElementById('page-dashboard').classList.contains('active')) loadDash();
 },30000);
 
-// Init empty charts
-['agePieCanvas','rolePieCanvas','studioPieCanvas','quadPieCanvas'].forEach(id=>{
-  const c=document.getElementById(id);
-  if(c){const ctx=setupHiDPI(c,130,130);ctx.clearRect(0,0,130,130);}
-});
-drawScatter([]);
+// Init
+drawScatter([],null);
 buildMiniGrid([]);
 </script>
 </body>
