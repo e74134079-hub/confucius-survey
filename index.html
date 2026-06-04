@@ -103,6 +103,11 @@ select:focus{outline:none;border-color:var(--ink);}
 .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .leg-sq{width:9px;height:9px;border-radius:1px;flex-shrink:0;}
 #dashCanvas{width:100%;aspect-ratio:1;display:block;border:1px solid var(--g10);border-radius:3px;background:var(--w);cursor:pointer;}
+/* Charts layout: scatter left, pies right */
+.charts-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;max-width:1200px;align-items:start;}
+@media(max-width:900px){.charts-layout{grid-template-columns:1fr;}}
+.scatter-card{}
+.pies-col{}
 .dot-tooltip{position:fixed;background:var(--ink);color:var(--w);padding:7px 11px;border-radius:3px;font-size:11px;font-family:var(--mono);pointer-events:none;z-index:999;display:none;line-height:1.6;white-space:nowrap;}
 
 /* MINI GRID */
@@ -294,18 +299,45 @@ table.resp-table tr:hover td{background:var(--g05);}
 
   <!-- SUB-PAGE: Charts -->
   <div class="sub-page active" id="sub-charts">
-    <div class="dash-grid">
-      <div class="card" style="grid-row:span 2;">
+    <!-- Regression toggle bar -->
+    <div class="filter-bar" style="margin-bottom:16px;">
+      <span class="filter-label">回歸線 Regression：</span>
+      <button class="f-btn" id="rBtn-none" onclick="setReg('none',this)">無 None</button>
+      <button class="f-btn active" id="rBtn-filter" onclick="setReg('filter',this)">目前篩選 Current</button>
+      <button class="f-btn" id="rBtn-all" onclick="setReg('all',this)">所有組別 All Groups</button>
+    </div>
+
+    <div class="charts-layout">
+      <!-- LEFT: scatter -->
+      <div class="card scatter-card">
         <div class="card-title">Spatial Distribution · 座標分布</div>
         <canvas id="dashCanvas" width="440" height="440"></canvas>
         <div class="legend" id="scatterLegend"></div>
         <div class="trend-box" id="trendBox">載入中...</div>
       </div>
-      <div class="card"><div class="card-title">Age · 年齡</div><div class="pie-wrap"><canvas id="agePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="agePieLegend"></div></div></div>
-      <div class="card"><div class="card-title">Role · 身份</div><div class="pie-wrap"><canvas id="rolePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="rolePieLegend"></div></div></div>
-      <div class="card"><div class="card-title">Year · 年級（學生）</div><div class="pie-wrap"><canvas id="yearPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="yearPieLegend"></div></div></div>
-      <div class="card"><div class="card-title">Studio · 設計組別</div><div class="pie-wrap"><canvas id="studioPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="studioPieLegend"></div></div></div>
-      <div class="card"><div class="card-title">Quadrant · 象限</div><div class="pie-wrap"><canvas id="quadPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="quadPieLegend"></div></div></div>
+
+      <!-- RIGHT: pies stacked -->
+      <div class="pies-col">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Quadrant · 象限</div>
+          <div class="pie-wrap"><canvas id="quadPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="quadPieLegend"></div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Age · 年齡</div>
+          <div class="pie-wrap"><canvas id="agePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="agePieLegend"></div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Role · 身份</div>
+          <div class="pie-wrap"><canvas id="rolePieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="rolePieLegend"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Year · 年級（學生）</div>
+          <div class="pie-wrap"><canvas id="yearPieCanvas" width="130" height="130"></canvas><div class="pie-legend" id="yearPieLegend"></div></div>
+        </div>
+        <!-- hidden studio canvas still needed for JS -->
+        <canvas id="studioPieCanvas" style="display:none"></canvas>
+        <div id="studioPieLegend" style="display:none"></div>
+      </div>
     </div>
   </div>
 
@@ -322,8 +354,8 @@ table.resp-table tr:hover td{background:var(--g05);}
       <div class="card-title">回應名單 · Respondent Directory</div>
       <div class="table-wrapper">
         <table class="resp-table">
-          <thead><tr><th>姓名</th><th>年級</th><th>組別</th><th>座標 (X, Y)</th><th>象限</th></tr></thead>
-          <tbody id="tableBody"><tr><td colspan="5" style="text-align:center;color:var(--g40)">載入中...</td></tr></tbody>
+          <thead><tr><th>姓名</th><th>組別</th><th>座標 (X, Y)</th><th>象限</th></tr></thead>
+          <tbody id="tableBody"><tr><td colspan="4" style="text-align:center;color:var(--g40)">載入中...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -373,6 +405,40 @@ function normStudio(s){if(!s)return null;const m=s.match(/^[A-G]-(.+)$/);return 
 let selX=null,selY=null,selAge=null,selRole=null,selYear=null;
 let allData=[],curFilter='all',focusName='';
 let scatterData=[];
+let regMode='filter'; // 'none' | 'filter' | 'all'
+
+function setReg(mode,btn){
+  regMode=mode;
+  document.querySelectorAll('[id^=rBtn-]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  drawScatter(scatterData,allData);
+}
+
+// Linear regression: returns {slope, intercept} for x→y
+function linReg(pts){
+  const n=pts.length; if(n<2) return null;
+  const mx=pts.reduce((s,p)=>s+p.x,0)/n;
+  const my=pts.reduce((s,p)=>s+p.y,0)/n;
+  const num=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0);
+  const den=pts.reduce((s,p)=>s+(p.x-mx)**2,0);
+  if(Math.abs(den)<1e-10) return null;
+  const slope=num/den;
+  return {slope, intercept:my-slope*mx};
+}
+
+function drawRegLine(ctx, pts, color, DS, alpha){
+  const reg=linReg(pts); if(!reg) return;
+  const x1=-5, x2=5;
+  const y1=reg.slope*x1+reg.intercept;
+  const y2=reg.slope*x2+reg.intercept;
+  const px1=(x1+5)/10*DS, py1=(1-(y1+5)/10)*DS;
+  const px2=(x2+5)/10*DS, py2=(1-(y2+5)/10)*DS;
+  ctx.save();
+  ctx.strokeStyle=color; ctx.lineWidth=1.2; ctx.globalAlpha=alpha||0.35;
+  ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(px1,py1); ctx.lineTo(px2,py2); ctx.stroke();
+  ctx.setLineDash([]); ctx.restore();
+}
 
 // ── HiDPI ─────────────────────────────────────────────────────────
 function hdpi(canvas,w,h){
@@ -609,9 +675,10 @@ function render(raw){
     ['學生','老師','其他'],ROLE_GREY);
   drawCatPie('yearPieCanvas','yearPieLegend',data.filter(d=>d.role==='學生'),'year',
     ['大一','大二','大三','大四','大五'],YEAR_GREY);
+  // Studio pie: all students regardless of year, use normStudio
   const normData=data.map(d=>({...d,sn:normStudio(d.studio)}));
   drawCatPie('studioPieCanvas','studioPieLegend',
-    normData.filter(d=>d.role==='學生'&&d.year==='大二'),'sn',
+    normData.filter(d=>d.role==='學生'&&d.sn),'sn',
     STUDIOS,STUDIOS.map(s=>STUDIO_CLR[s]),STUDIO_LABELS);
   drawCatPie('quadPieCanvas','quadPieLegend',data,'quadrant',
     ['感性×批判','理性×批判','感性×包容','理性×包容'],QUAD_GREY);
@@ -689,64 +756,88 @@ function drawCatPie(cid,lid,data,key,cats,clrs,labels){
   }
 }
 
-// ── SCATTER — highlighted subset + grey background ──────────────
+// ── SCATTER ───────────────────────────────────────────────────────
 function dotClr(d){
   if(d.role==='學生'&&d.studio) return STUDIO_CLR[d.studio]||STUDIO_CLR[normStudio(d.studio)]||'#c4c2be';
   return '#c4c2be';
 }
 function drawScatter(highlighted,allRaw){
   const dc=document.getElementById('dashCanvas');
-  const DS=440;const ctx=hdpi(dc,DS,DS);
+  const DS=440; const ctx=hdpi(dc,DS,DS);
   drawBase(ctx,DS);
-
-  const highlightedSet=new Set((highlighted||[]).map(d=>d.id||d.name));
+  const data=highlighted||[];
   const showAll=curFilter==='all';
 
-  // draw all data first as grey if filtered
-  if(!showAll&&allRaw){
-    allRaw.forEach(d=>{
+  // ── "all" regression mode: grey bg dots + one line per studio ──
+  if(regMode==='all'){
+    // all dots very faint
+    (allRaw||[]).forEach(d=>{
       const px=(d.x+5)/10*DS,py=(1-(d.y+5)/10)*DS;
-      ctx.fillStyle='#d4d2ce';ctx.globalAlpha=.35;
-      ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#d4d2ce'; ctx.globalAlpha=.2;
+      ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fill();
       ctx.globalAlpha=1;
     });
+    // one regression line per studio (all data)
+    STUDIOS.forEach(s=>{
+      const pts=(allRaw||[]).filter(d=>normStudio(d.studio)===s&&d.role==='學生');
+      drawRegLine(ctx,pts,STUDIO_CLR[s],DS,0.55);
+    });
+    // overall grey line
+    const allPts=(allRaw||[]).filter(d=>d.x!==undefined);
+    drawRegLine(ctx,allPts,'#9c9894',DS,0.3);
+  } else {
+    // normal mode: grey background for non-highlighted
+    if(!showAll&&allRaw){
+      allRaw.forEach(d=>{
+        const px=(d.x+5)/10*DS,py=(1-(d.y+5)/10)*DS;
+        ctx.fillStyle='#d4d2ce'; ctx.globalAlpha=.28;
+        ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fill();
+        ctx.globalAlpha=1;
+      });
+    }
+
+    // std dev ellipse for highlighted
+    if(data.length>2){
+      const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
+      const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
+      const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/data.length);
+      const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/data.length);
+      const px=(cx+5)/10*DS,py=(1-(cy+5)/10)*DS;
+      ctx.strokeStyle='rgba(172,25,23,.1)';ctx.lineWidth=.8;
+      ctx.beginPath();ctx.ellipse(px,py,sx/10*DS,sy/10*DS,0,0,Math.PI*2);ctx.stroke();
+    }
+
+    // regression line for current filter
+    if(regMode==='filter'&&data.length>=2){
+      // determine colour: if all same studio use that colour, else grey
+      const studios=new Set(data.filter(d=>d.studio).map(d=>normStudio(d.studio)));
+      const lineClr=studios.size===1?STUDIO_CLR[Array.from(studios)[0]]||'#9c9894':'#9c9894';
+      drawRegLine(ctx,data,lineClr,DS,0.5);
+    }
+
+    // highlighted dots
+    data.forEach(d=>{
+      const px=(d.x+5)/10*DS,py=(1-(d.y+5)/10)*DS;
+      ctx.fillStyle=dotClr(d); ctx.globalAlpha=.8;
+      ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=.8;ctx.globalAlpha=1;ctx.stroke();
+    });
+
+    // centroid
+    if(data.length>0){
+      const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
+      const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
+      const px=(cx+5)/10*DS,py=(1-(cy+5)/10)*DS;
+      ctx.strokeStyle='rgba(172,25,23,.22)';ctx.lineWidth=.5;ctx.setLineDash([3,4]);
+      ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,DS);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(DS,py);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#ac1917';ctx.fillRect(px-4,py-4,8,8);
+      ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(px-4,py-4,8,8);
+    }
   }
 
-  // std dev ellipse
-  const data=highlighted||[];
-  if(data.length>2){
-    const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
-    const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
-    const sx=Math.sqrt(data.reduce((s,d)=>s+(d.x-cx)**2,0)/data.length);
-    const sy=Math.sqrt(data.reduce((s,d)=>s+(d.y-cy)**2,0)/data.length);
-    const px=(cx+5)/10*DS,py=(1-(cy+5)/10)*DS;
-    ctx.strokeStyle='rgba(172,25,23,.12)';ctx.lineWidth=.8;
-    ctx.beginPath();ctx.ellipse(px,py,sx/10*DS,sy/10*DS,0,0,Math.PI*2);ctx.stroke();
-  }
-
-  // highlighted dots
-  data.forEach(d=>{
-    const px=(d.x+5)/10*DS,py=(1-(d.y+5)/10)*DS;
-    const clr=dotClr(d);
-    ctx.fillStyle=clr;ctx.globalAlpha=.8;
-    ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=.8;ctx.globalAlpha=1;ctx.stroke();
-  });
-
-  // centroid
-  if(data.length>0){
-    const cx=data.reduce((s,d)=>s+d.x,0)/data.length;
-    const cy=data.reduce((s,d)=>s+d.y,0)/data.length;
-    const px=(cx+5)/10*DS,py=(1-(cy+5)/10)*DS;
-    ctx.strokeStyle='rgba(172,25,23,.25)';ctx.lineWidth=.5;ctx.setLineDash([3,4]);
-    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,DS);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(DS,py);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='#ac1917';ctx.fillRect(px-4,py-4,8,8);
-    ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(px-4,py-4,8,8);
-  }
-
-  // focus
+  // focus highlight (always on top)
   if(focusName){
     const fd=(allRaw||data).find(d=>d.name===focusName);
     if(fd){
@@ -868,20 +959,19 @@ function renderTable(raw){
   STUDIOS.forEach(s=>{
     const rows=raw.filter(d=>d.role==='學生'&&normStudio(d.studio)===s&&d.name&&!d.name.includes('_'));
     if(!rows.length)return;
-    html+=`<tr class="group-header"><td colspan="5" style="color:${STUDIO_CLR[s]}">${s} 老師組</td></tr>`;
+    html+=`<tr class="group-header"><td colspan="4" style="color:${STUDIO_CLR[s]}">${s} 老師組</td></tr>`;
     rows.sort((a,b)=>a.name.localeCompare(b.name,'zh-TW')).forEach(d=>{
       const isFocus=focusName&&d.name===focusName;
       const qclr=QUAD_GREY_MAP[d.quadrant]||'#9c9894';
       html+=`<tr class="${isFocus?'focus-row':''}">
         <td><b>${d.name}</b></td>
-        <td style="color:var(--g60)">${d.year||'—'}</td>
         <td style="color:${STUDIO_CLR[s]};font-size:11px">${s} 老師組</td>
         <td style="font-family:var(--mono);font-size:11px">(${d.x}, ${d.y})</td>
         <td style="color:${qclr};font-family:var(--mono);font-size:11px">${d.quadrant||'—'}</td>
       </tr>`;
     });
   });
-  tbody.innerHTML=html||'<tr><td colspan="5" style="text-align:center;color:var(--g40)">尚無學生資料</td></tr>';
+  tbody.innerHTML=html||'<tr><td colspan="4" style="text-align:center;color:var(--g40)">尚無學生資料</td></tr>';
 }
 
 // ── TAB SWITCHING ──────────────────────────────────────────────────
