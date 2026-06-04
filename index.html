@@ -148,6 +148,7 @@ table.resp-table tr:hover td{background:var(--g05);}
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('survey',this)">定位調查 / Survey</button>
+  <button class="tab" onclick="switchTab('grid',this)">學生點位 / Positions</button>
   <button class="tab" onclick="switchTab('dashboard',this)">資料儀表板 / Dashboard</button>
 </div>
 
@@ -249,6 +250,19 @@ table.resp-table tr:hover td{background:var(--g05);}
 </div>
 </div>
 
+<!-- ══ STUDENT POSITIONS ══ -->
+<div class="page" id="page-grid">
+  <div style="max-width:1200px;margin-bottom:20px;">
+    <div style="font-size:22px;font-weight:300;letter-spacing:-.02em;margin-bottom:6px;">
+      學生個人點位 <span style="font-size:14px;color:var(--g40);font-weight:300">· Student Positions</span>
+    </div>
+    <div style="font-size:12px;color:var(--g40);font-family:var(--mono);">點擊格子放大 · Click any cell to enlarge</div>
+  </div>
+  <div class="mini-grid-wrap">
+    <div class="mini-grid-scroll"><div class="mini-grid" id="miniGrid"></div></div>
+  </div>
+</div>
+
 <!-- ══ DASHBOARD ══ -->
 <div class="page" id="page-dashboard">
   <div class="dash-header">
@@ -293,7 +307,6 @@ table.resp-table tr:hover td{background:var(--g05);}
   <!-- Sub-tabs -->
   <div class="sub-tabs">
     <button class="sub-tab active" onclick="switchSubTab('charts',this)">Charts · 圖表分析</button>
-    <button class="sub-tab" onclick="switchSubTab('grid',this)">Student Positions · 學生點位</button>
     <button class="sub-tab" onclick="switchSubTab('table',this)">Directory · 回應名單</button>
   </div>
 
@@ -338,13 +351,6 @@ table.resp-table tr:hover td{background:var(--g05);}
         <canvas id="studioPieCanvas" style="display:none"></canvas>
         <div id="studioPieLegend" style="display:none"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- SUB-PAGE: Grid -->
-  <div class="sub-page" id="sub-grid">
-    <div class="mini-grid-wrap">
-      <div class="mini-grid-scroll"><div class="mini-grid" id="miniGrid"></div></div>
     </div>
   </div>
 
@@ -981,6 +987,17 @@ function switchTab(tab,btn){
   btn.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
   if(tab==='dashboard') loadDash();
+  if(tab==='grid'){
+    // load data if not yet loaded
+    if(!allData.length){
+      fetch(SB+'/rest/v1/responses?select=*&limit=5000',
+        {headers:{'apikey':SK,'Authorization':'Bearer '+SK}})
+        .then(r=>r.json()).then(d=>{allData=Array.isArray(d)?d:[];buildMiniGrid(allData);})
+        .catch(()=>buildMiniGrid([]));
+    } else {
+      buildMiniGrid(allData);
+    }
+  }
 }
 function switchSubTab(tab,btn){
   document.querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));
